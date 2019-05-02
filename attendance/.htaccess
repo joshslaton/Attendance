@@ -1,0 +1,5 @@
+Options +FollowSymLinks
+Options -Indexes
+RewriteEngine On
+
+RewriteRule ^(.*)$ router.php?url=$1 [QSA,NC,L]
