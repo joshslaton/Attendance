@@ -1,5 +1,6 @@
 <?php
 
+// File to include MVC folders and its contents, except index.php
 session_start();
 
 $appDir = dirname(__file__) . DIRECTORY_SEPARATOR . 'app';

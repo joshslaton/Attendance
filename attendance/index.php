@@ -1,3 +1,4 @@
 <?php
-echo "index";
+echo 'You\'re prohibited to access this file.';
+exit;
 ?>
