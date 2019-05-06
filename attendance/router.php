@@ -18,6 +18,7 @@ foreach ($routes as $route) {
     $routePath .= DIRECTORY_SEPARATOR . $route;
 }
 $routePath.='.php';
+// print($routePath."<br>");
 if(file_exists($routePath) && is_file($routePath)) {
   ob_start();
   require_once($routePath);
