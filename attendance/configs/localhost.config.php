@@ -16,6 +16,7 @@ $config['dir'] = array();
 $config['dir']['root'] = dirname(dirname(__FILE__));
 $config['dir']['app'] = $config['dir']['root'] . DIRECTORY_SEPARATOR . 'app';
 $config['dir']['themes'] = $config['dir']['root'] . DIRECTORY_SEPARATOR . 'themes';
+$config['dir']['plugins'] = $config['dir']['root'] . DIRECTORY_SEPARATOR . 'plugins';
 
 
 $config['database'] = array(

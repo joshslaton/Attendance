@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'Montserrat';
+    src: url('fonts/Montserrat-Light.otf');
+    src: url('fonts/Montserrat-Light.otf') format('opentype');
+}
+
+* {
+  font-family: 'Montserrat', sans-serif;
+}
