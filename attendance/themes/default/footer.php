@@ -1,5 +1,6 @@
 <?php
-$html = '</body>';
+$html = '</div>';
+$html .= '</body>';
 $html .= '</html>';
 
 echo $html;
