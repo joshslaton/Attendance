@@ -27,5 +27,6 @@ class Pages {
       require_once($footerFilepath);
     }
   }
+  
 }
 ?>

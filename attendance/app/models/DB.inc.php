@@ -23,6 +23,7 @@ class db {
   }
 
   public static function query($args) {
+    // print_r($args);
     if(empty(self::$connection)) {
       self::connect();
     }
@@ -45,18 +46,18 @@ class db {
     $queryType = strtolower($queryType[0]);
 
     try {
-      print($value);
       $stmt = self::$connection->prepare($query);
       $execute = !empty($value) ? $stmt->execute($value) : $stmt->execute();
       if (in_array($queryType, array('select', 'show'))) {
+        // echo "Query Type: ",$queryType,"<br>\n";
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-      } else if ($queryType, array('insert', 'update', 'delete')) {
-        // ???
+      } else if (in_array($queryType, array('insert', 'update', 'delete'))) {
+        // echo "Query Type: ",$queryType,"<br>\n";
       }
     } catch ( \PDOexception $e) {
 
     }
-
+    return $result;
   }
 } // End of class
 ?>

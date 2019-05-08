@@ -14,16 +14,29 @@
   $html .= '<body>';
   $html .= '<div class="page-wrapper">';
 
-  // echo $html;
+  echo $html;
 
-  $menu = '<div class="dropdown">';
-  $menu .= '<span>Home</span>';
-    $menu .= '<div class="dropdown-content">';
-      $menu .= '<div>Sub menu 1</div>';
+  $menu = '<div class="page-header">';
+
+    $menu .= '<div class="dropdown">';
+    $menu .= '<span><a href="'.Core\Registry::get('config/url/base').'views/home/">Home</a></span>';
     $menu .= '</div>';
-  $menu .= '</div>';
 
-  // echo $menu;
+    $menu .= '<div class="dropdown">';
+    $menu .= '<span>Reports</span>';
+      $menu .= '<div class="dropdown-content">';
+        $menu .= '<div><a href="'.Core\Registry::get('config/url/base').'views/reports/student/">Student</a></div>';
+        $menu .= '<div><a href="'.Core\Registry::get('config/url/base').'views/reports/section/">Section</a></div>';
+        $menu .= '<div><a href="'.Core\Registry::get('config/url/base').'views/reports/grade/">Grade</a></div>';
+      $menu .= '</div>';
+    $menu .= '</div>';
 
-  Core\db::query(array("SELECT * FROM preschool WHERE idnumber = ?",array("2900876")));
+    $menu .= '<div class="dropdown">';
+    $menu .= '<span>Logout</span>';
+    $menu .= '</div>';
+
+  $menu .= '</div>'; // End of Page Header Div
+  // $menu .= '<div class="page-content">'; // End of Page Header Div
+
+  echo $menu;
 ?>
