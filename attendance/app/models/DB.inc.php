@@ -1,105 +1,62 @@
 <?php
+namespace Core;
+
 class db {
 
-  protected $connection;
-	protected $query;
-	public $query_count = 0;
+  public static $connection;
 
-	public function __construct($dbhost = DBHOST, $dbuser = DBUSER, $dbpass = DBPASS, $dbname = DBNAME, $charset = 'utf8') {
-		$this->connection = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
-		if ($this->connection->connect_error) {
-			die('Failed to connect to MySQL - ' . $this->connection->connect_error);
-		}
-		$this->connection->set_charset($charset);
-	}
+  function __construct() {}
+  function __destruct() {}
 
-    public function query($query) {
-		if ($this->query = $this->connection->prepare($query)) {
-            if (func_num_args() > 1) {
-                $x = func_get_args();
-                $args = array_slice($x, 1);
-				$types = '';
-                $args_ref = array();
-                foreach ($args as $k => &$arg) {
-					if (is_array($args[$k])) {
-						foreach ($args[$k] as $j => &$a) {
-							$types .= $this->_gettype($args[$k][$j]);
-							$args_ref[] = &$a;
-						}
-					} else {
-	                	$types .= $this->_gettype($args[$k]);
-	                    $args_ref[] = &$arg;
-					}
-                }
-				array_unshift($args_ref, $types);
-                call_user_func_array(array($this->query, 'bind_param'), $args_ref);
-            }
-            $this->query->execute();
-           	if ($this->query->errno) {
-				die('Unable to process MySQL query (check your params) - ' . $this->query->error);
-           	}
-			$this->query_count++;
-        } else {
-            die('Unable to prepare statement (check your syntax) - ' . $this->query->error);
-        }
-		return $this;
+  public static function connect() {
+    try {
+
+      $config = Registry::get('config/database');
+
+      self::$connection = new \PDO('mysql:host='.$config["host"].'; dbname='. $config["database"], $config["username"], $config['password']);
+
+    } catch( \PDOexception $e) {
+      echo $e->getMessage();
+      exit;
+
+    }
+  }
+
+  public static function query($args) {
+    if(empty(self::$connection)) {
+      self::connect();
+    }
+    $result = null;
+    if(!is_array($args)) {
+      error_log("DB::query is called with invalid parameters");
+      return $result;
     }
 
-	public function fetchAll() {
-	    $params = array();
-	    $meta = $this->query->result_metadata();
-	    while ($field = $meta->fetch_field()) {
-	        $params[] = &$row[$field->name];
-	    }
-	    call_user_func_array(array($this->query, 'bind_result'), $params);
-        $result = array();
-        while ($this->query->fetch()) {
-            $r = array();
-            foreach ($row as $key => $val) {
-                $r[$key] = $val;
-            }
-            $result[] = $r;
-        }
-        $this->query->close();
-		return $result;
-	}
+    $query = "";
+    $value = "";
+    if (!empty($args[0])) {
+      $query = !empty($args[0]) ? $args[0] : $args['query'];
+    }
+    if (!empty($args[1])) {
+      $value = $args[1];
+    }
 
-	public function fetchArray() {
-	    $params = array();
-	    $meta = $this->query->result_metadata();
-	    while ($field = $meta->fetch_field()) {
-	        $params[] = &$row[$field->name];
-	    }
-	    call_user_func_array(array($this->query, 'bind_result'), $params);
-        $result = array();
-		while ($this->query->fetch()) {
-			foreach ($row as $key => $val) {
-				$result[$key] = $val;
-			}
-		}
-        $this->query->close();
-		return $result;
-	}
+    $queryType = explode(" ", $query);
+    $queryType = strtolower($queryType[0]);
 
-	public function numRows() {
-		$this->query->store_result();
-		return $this->query->num_rows;
-	}
+    try {
+      print($value);
+      $stmt = self::$connection->prepare($query);
+      $execute = !empty($value) ? $stmt->execute($value) : $stmt->execute();
+      if (in_array($queryType, array('select', 'show'))) {
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      } else if ($queryType, array('insert', 'update', 'delete')) {
+        // ???
+      }
+    } catch ( \PDOexception $e) {
 
-	public function close() {
-		return $this->connection->close();
-	}
+    }
 
-	public function affectedRows() {
-		return $this->query->affected_rows;
-	}
-
-	private function _gettype($var) {
-	    if(is_string($var)) return 's';
-	    if(is_float($var)) return 'd';
-	    if(is_int($var)) return 'i';
-	    return 'b';
-	}
-
-}
+  }
+} // End of class
 ?>

@@ -14,16 +14,16 @@
   $html .= '<body>';
   $html .= '<div class="page-wrapper">';
 
-  echo $html;
+  // echo $html;
 
   $menu = '<div class="dropdown">';
   $menu .= '<span>Home</span>';
     $menu .= '<div class="dropdown-content">';
-      $menu .= '<p>Sub menu 1</p>';
-      $menu .= '<p>Sub menu 2</p>';
-      $menu .= '<p>Sub menu 3</p>';
+      $menu .= '<div>Sub menu 1</div>';
     $menu .= '</div>';
   $menu .= '</div>';
 
-  echo $menu;
+  // echo $menu;
+
+  Core\db::query(array("SELECT * FROM preschool WHERE idnumber = ?",array("2900876")));
 ?>
