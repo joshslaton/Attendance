@@ -1,13 +1,12 @@
 <?php
-// namespace Core;
+include_once "./config.php";
 class db {
 
   protected $connection;
 	protected $query;
 	public $query_count = 0;
 
-	// public function __construct($dbhost = DBHOST, $dbuser = DBUSER, $dbpass = DBPASS, $dbname = DBNAME, $charset = 'utf8') {
-	public function __construct($dbhost = "localhost", $dbuser = "kiosk", $dbpass = "kiosk", $dbname = "preschool_gatekeeper", $charset = 'utf8') {
+	public function __construct($dbhost = DBHOST, $dbuser = DBUSER, $dbpass = DBPASS, $dbname = DBNAME, $charset = 'utf8') {
 		$this->connection = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
 		if ($this->connection->connect_error) {
 			die('Failed to connect to MySQL - ' . $this->connection->connect_error);
