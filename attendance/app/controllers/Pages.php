@@ -27,6 +27,12 @@ class Pages {
       require_once($footerFilepath);
     }
   }
-  
+
+  function renderPageWithoutHeaders(){
+    if (Registry::check('page_html')) {
+      echo Registry::get('page_html');
+    }
+  }
+
 }
 ?>

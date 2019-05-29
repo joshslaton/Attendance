@@ -10,9 +10,8 @@ class db {
 
   public static function connect() {
     try {
-
+      // print_r(Registry::check('config'));
       $config = Registry::get('config/database');
-
       self::$connection = new \PDO('mysql:host='.$config["host"].'; dbname='. $config["database"], $config["username"], $config['password']);
 
     } catch( \PDOexception $e) {
@@ -23,7 +22,6 @@ class db {
   }
 
   public static function query($args) {
-    // print_r($args);
     if(empty(self::$connection)) {
       self::connect();
     }
@@ -41,7 +39,6 @@ class db {
     if (!empty($args[1])) {
       $value = $args[1];
     }
-
     $queryType = explode(" ", $query);
     $queryType = strtolower($queryType[0]);
 
@@ -55,7 +52,7 @@ class db {
         // echo "Query Type: ",$queryType,"<br>\n";
       }
     } catch ( \PDOexception $e) {
-
+      print_r($e->message());
     }
     return $result;
   }

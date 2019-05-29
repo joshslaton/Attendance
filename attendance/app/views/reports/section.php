@@ -1,29 +1,32 @@
 <?php
- $sidebar = '<div class="page-sidebar">';
+  $content = "<div class='page-content' style='width: 100%; height: calc(100% - 32px)'>";
 
- $sidebar .= '<p class="options-title">Gender</p>';
- // Male
- $sidebar .= '<div class="form-inline">';
- $sidebar .= '<div class="form-group options-input">';
- $sidebar .= '<input name="gender" id="options-gender-m" class="options-sidebar" type="checkbox" value="m" />';
- $sidebar .= '<label name="gender" class="form-check-label" for="options-gender-m">Male</label>';
- $sidebar .= '</div>';
- $sidebar .= '</div>';
- // Female
- $sidebar .= '<div class="form-inline">';
- $sidebar .= '<div class="form-group options-input">';
- $sidebar .= '<input name="gender" id="options-gender-f" class="options-sidebar" type="checkbox" value="f" />';
- $sidebar .= '<label name="gender" class="form-check-label" for="options-gender-f">Female</label>';
- $sidebar .= '</div>';
- $sidebar .= '</div>';
+  // TODO: add data table for searching
 
- $sidebar .= '</div>';
+  $content .= "<table id='studentTable' class='table' data-script='loadStudentTable'>";
+  $content .= "<thead>";
+  $content .= "<tr style='text-align: left;'>";
+  $content .= "<th>ID Number</th>";
+  $content .= "<th>Name</th>";
+  $content .= "<th>Attendance</th>";
+  $content .= "</tr>";
+  $content .= "</thead>";
+  $content .= "<tbody>";
 
- echo $sidebar;
+  if(isset($_GET["grade"]) && $_GET["grade"]) {
+    $results = Core\db::query(array("SELECT idnumber, name FROM preschool WHERE grade = ?", array($_GET["grade"])));
 
- $content = '<div class="page-content">';
- $content .= 'Content';
- $content .= '</div>';
+        foreach($results as $result) {
+          $content .= "<tr data-idnumber='".$result["idnumber"]."' style='text-align: left;'>";
+          $content .= "<td>".$result["idnumber"]."</td>";
+          $content .= "<td>".$result["name"]."</td>";
+          $content .= "<td><a href='#View'>View</a> | <a href='#View'>Edit</a> | <a href='#View'>Print</a></td>";
+          $content .= "</tr>";
+        }
+  }
 
- echo $content;
+  $content .= "</tbody>";
+  $content .= "</table>";
+  $content .= "</div>";
+  echo $content;
 ?>
