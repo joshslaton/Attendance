@@ -231,9 +231,23 @@ class Calendar {
     // ]
   }
 
-  public static function getAttendance($type, $month) {
-    if($type == "Present") {
+  public static function isPresent($m, $d) {
+    return True;
+  }
 
+  public static function getAttendance($type, $month) {
+    $startDate = "2018-08-13";
+    $endDate = "2019-05-17";
+    $numOfDays = date("t", mktime(0, 0, 0, $month, 1));
+
+    if($type == "Present") {
+      $total = 0;
+      for($i = 1; $i <= $numOfDays; $i++) {
+        if(self::isPresent($month, $i)){
+          $total += 1;
+        }
+      }
+      return $total;
     }
     if($type == "Absent") {
       return 0;

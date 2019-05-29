@@ -19,9 +19,9 @@
 
   $menu = '<div class="page-header" style="background-color: rgb(0, 0, 0, 0);">';
 
-    $menu .= '<div class="dropdown">';
-    $menu .= '<span><a href="'.Core\Registry::get('config/url/base').'views/home/">Home</a></span>';
-    $menu .= '</div>';
+    // $menu .= '<div class="dropdown">';
+    // $menu .= '<span><a href="'.Core\Registry::get('config/url/base').'views/home/">Home</a></span>';
+    // $menu .= '</div>';
 
     $menu .= '<div class="dropdown">';
     $menu .= '<span><a href="'.Core\Registry::get('config/url/base').'views/reports/">Reports</a></span>';

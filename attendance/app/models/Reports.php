@@ -45,12 +45,13 @@ class Reports {
 
     return $content;
   }
-  
+
   static function getAttendance($idnumber) {
     // returns array of information
     $startDate = "2018-08-13";
     $endDate = "2019-05-17";
   }
+
 } // End of class
 
 if (isset($_GET['reportType'])) {
