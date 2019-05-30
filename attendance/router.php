@@ -20,28 +20,24 @@ foreach ($routes as $route) {
 $routePath.='.php';
 
 // Files that can be rendered without header or footer.
-$ignoredFiles  = [
-  "studentInfo.php"
-];
-
+// print_r(Core\Registry::get("config/filesWithoutHeader"));
 if(file_exists($routePath) && is_file($routePath)) {
-  foreach($ignoredFiles as $i) {
-    if(!in_array($i, explode("/", $routePath))) {
-      ob_start();
-      require_once($routePath);
-      $html = ob_get_contents();
-      ob_end_clean();
-      Core\Registry::set('page_html', $html);
-      Core\Pages::renderPage();
-    } else {
+    $info = pathinfo($routePath);
+    if(in_array($info["basename"], Core\Registry::get("config/filesWithoutHeader"))) {
       ob_start();
       require_once($routePath);
       $html = ob_get_contents();
       ob_end_clean();
       Core\Registry::set('page_html', $html);
       Core\Pages::renderPageWithoutHeaders();
+    } else {
+      ob_start();
+      require_once($routePath);
+      $html = ob_get_contents();
+      ob_end_clean();
+      Core\Registry::set('page_html', $html);
+      Core\Pages::renderPage();
     }
-  }
 }else {
     echo 'The webpage you\'re trying to access ' , $_SERVER['HTTP_HOST'] , $_SERVER['REQUEST_URI'] , ' doesn\'t exists.';
     error_log('Views file doesn\'t exists ' . $routePath, 0);

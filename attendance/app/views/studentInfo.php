@@ -1,7 +1,7 @@
 <?php
 // data returned to be process by javascript
 
-if(($_POST["requestType"]) == "requestInfo") {
+if(($_POST["requestType"]) == "requestInfox") {
   if(isset($_POST["idnumber"]) && ($_POST["idnumber"]) != "") {
     $id = $_POST["idnumber"];
     $results = Core\db::query(array("SELECT idnumber, name FROM preschool WHERE idnumber = ?", array($id)));
@@ -47,6 +47,16 @@ if(($_POST["requestType"]) == "requestInfo") {
         $content .= "</tbody>";
       }
     $content .= "</table>";
+    echo $content;
+  }
+}
+
+if(($_POST["requestType"]) == "requestInfo") {
+  if(isset($_POST["idnumber"]) && ($_POST["idnumber"]) != "") {
+    $id = $_POST["idnumber"];
+    $results = Core\db::query(array("SELECT idnumber, name FROM preschool WHERE idnumber = ?", array($id)));
+    $results = $results[0];
+
     echo $content;
   }
 }

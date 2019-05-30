@@ -26,5 +26,10 @@ $config['database'] = array(
   'database' => 'preschool_gatekeeper'
 );
 
+$config['filesWithoutHeader'] = array(
+  "studentInfo.php",
+  "loadStudentTable.php",
+);
+
 Core\Registry::set('config', $config); # Whats the purpose of this?
 ?>
