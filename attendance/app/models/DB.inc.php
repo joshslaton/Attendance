@@ -4,6 +4,7 @@ namespace Core;
 class db {
 
   public static $connection;
+  private static $lastInsertId;
 
   function __construct() {}
   function __destruct() {}
@@ -19,6 +20,10 @@ class db {
       exit;
 
     }
+  }
+
+  public static function lastInsertId () {
+      return self::$lastInsertId;
   }
 
   public static function query($args) {
@@ -39,9 +44,9 @@ class db {
     if (!empty($args[1])) {
       $value = $args[1];
     }
+    // print_r($args[1]);
     $queryType = explode(" ", $query);
     $queryType = strtolower($queryType[0]);
-
     try {
       $stmt = self::$connection->prepare($query);
       $execute = !empty($value) ? $stmt->execute($value) : $stmt->execute();
@@ -50,6 +55,13 @@ class db {
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
       } else if (in_array($queryType, array('insert', 'update', 'delete'))) {
         // echo "Query Type: ",$queryType,"<br>\n";
+        if ($queryType === 'insert') {
+          // var_dump($value);
+            self::$lastInsertId = self::$connection->lastInsertId();
+        } else {
+            self::$lastInsertId = null;
+        }
+        $result = $execute;
       }
     } catch ( \PDOexception $e) {
       print_r($e->message());
