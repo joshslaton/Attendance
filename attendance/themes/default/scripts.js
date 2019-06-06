@@ -1,6 +1,6 @@
 
 $(document).ready(function(){
-
+  url_base = window.location.origin+"/";
   function systemBootstrap() {
     var html = $("html");
 
@@ -64,35 +64,18 @@ function studentTable() {
   g.change( function() {
     t.find("tbody").html("")
     g.each( function(){
-      var grade = $(this).val()
+      var ccode = $(this).val()
       $.ajax({
         type: "post",
-        url: 'http://localhost/attendance/models/loadStudentTable/',
-        data: { grade: grade },
+        url: 'http://localhost/models/loadStudentTable/',
+        data: { ccode: ccode },
         success: function(data) {
-          var s = Array()
           var obj = JSON.parse(data);
 
-          // For each student get their section, place it an array where there
-          // no duplucates
-          for(var i=0; i < obj.length;i++) {
-            var temp = Object.values(obj)[i].section
-            if(s.indexOf(temp) < 0){
-              s.push(temp)
-            }
-          }
-
-          // Print a list of students according to the current iteration of
-          // section
-          for(var i=0; i < s.length; i++) {
-            t.find("tbody").append("<tr style='background-color: rgb(0,0,0,0.5); color:white;'><th colspan='3'>Section: "+s[i]+"</th></tr>")
-            for(var j = 0; j < obj.length; j++) {
-              if(s[i] == Object.values(obj)[j].section) {
-                var id = obj[j].idnumber
-                var n = obj[j].name
-                t.find("tbody").append("<tr><td>"+id+"</td><td>"+n+"</td><td><a href='#View'>View</a> | <a href='#View'>Edit</a> | <a href='#View'>Print</a></td></tr>")
-              }
-            }
+          for(var j = 0; j < obj.length; j++) {
+            var id = obj[j].idnumber
+            var n = obj[j].sname
+            t.find("tbody").append("<tr><td>"+id+"</td><td>"+n+"</td><td><a href='"+url_base+"views/reports/student/?idnumber="+id+"'>View</a> | <a href='#View'>Edit</a> | <a href='#View'>Print</a></td></tr>")
           }
         }
       })
@@ -112,7 +95,8 @@ function loadStudentTable() {
     id = $(this).closest("tr").data("idnumber")
 
     $.ajax({
-      url: "http://localhost/attendance/views/studentInfo",
+      // url: "http://localhost/attendance/views/studentInfo",
+      url: "http://localhost/views/studentInfo/",
       type: "post",
       data: {
         requestType: "requestInfo",

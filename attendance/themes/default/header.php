@@ -1,19 +1,21 @@
 <?php
-  // session_start();
+  session_start();
+  $schoolYear = Core\Attendance::schoolYear("set");
+  $_SESSION["schoolYear"] = $schoolYear["syear"];
   // $title = Core\Registry::get('config/page_title');
 
-  $html = '<html>';
-  $html .= '<head>';
-  // $html .= '<title>'.Core\Registry::get('config/page_title').'</title>';
+  $html = "<html>";
+  $html .= "<head>";
+  $html .= '<title>'.Core\Registry::get('config/page_title').'</title>';
   $html .= '<script src="'.Core\Registry::get('config/url/base'). 'plugins/jquery.min.js" type="text/javascript"></script>';
   $html .= '<script src="'.Core\Registry::get('config/url/base'). 'plugins/bootstrap.min.js" type="text/javascript"></script>';
   $html .= '';
   $html .= '<link href="'.Core\Registry::get('config/url/base'). 'plugins/bootstrap.min.css" rel="stylesheet">';
   $html .= '<script src="'.Core\Registry::get('config/url/theme'). 'scripts.js"></script>';
-  $html .= '<link href="'.Core\Registry::get('config/url/theme'). 'style.css" rel="stylesheet">';
-  $html .= '</head>';
-  $html .= '<body>';
-  $html .= '<div class="page-wrapper">';
+  $html .= "<link href='".Core\Registry::get("config/url/theme"). "style.css' rel='stylesheet'>";
+  $html .= "</head>";
+  $html .= "<body>";
+  $html .= "<div class='page-wrapper'>";
 
   echo $html;
 
@@ -22,7 +24,6 @@
     // $menu .= '<div class="dropdown">';
     // $menu .= '<span><a href="'.Core\Registry::get('config/url/base').'views/home/">Home</a></span>';
     // $menu .= '</div>';
-
     $menu .= '<div class="dropdown">';
     $menu .= '<span><a href="'.Core\Registry::get('config/url/base').'views/reports/">Reports</a></span>';
       $menu .= '<div class="dropdown-content">';
@@ -32,13 +33,15 @@
       $menu .= '</div>';
     $menu .= '</div>';
 
-    $menu .= '<div class="dropdown">';
-    $menu .= '<span><a href="'.Core\Registry::get('config/url/base').'views/reports/">School Year</a></span>';
-      $menu .= '<div class="dropdown-content">';
-        $menu .= '<div><a href="'.Core\Registry::get('config/url/base').'views/reports/student/">2018 - 2019</a></div>';
-        $menu .= '<div><a href="'.Core\Registry::get('config/url/base').'views/reports/student/">2019 - 2020</a></div>';
-      $menu .= '</div>';
-    $menu .= '</div>';
+    // $menu .= '<div class="dropdown">';
+    // $menu .= '<span><a href="'.Core\Registry::get('config/url/base').'views/reports/">School Year</a></span>';
+    // $schoolYear = Core\Attendance::schoolYear();
+    //   $menu .= '<div class="dropdown-content">';
+    //   foreach($schoolYear  as $year) {
+    //     $menu .= "<div><a href='".Core\Registry::get("config/url/base")."views/reports/student/'>".$year["name"]."</a></div>";
+    //   }
+    //   $menu .= '</div>';
+    // $menu .= '</div>';
 
     // $menu .= '<div class="dropdown">';
     // $menu .= '<span>Logout</span>';

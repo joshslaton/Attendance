@@ -1,7 +1,7 @@
 <?php
 include("/var/www/html/preschool/includes/DB.inc.php");
 DEFINE("isDebugMode",true);
-DEFINE("cooldown", 600);
+DEFINE("cooldown", 1);
 # arduino needs to send a hash tha will be identified by the webserver if its the arduino asking for an HTTP request
 
 class SMS {
@@ -91,7 +91,7 @@ private function checkIfStudentExists($idnumber){
       }
   }
 
-  protected function sendSMS($from,$number,$message){
+  protected function sendSMS2($from,$number,$message){
   	$curl = curl_init();
   	$split = "[{]}}]";
   	$msg = explode($split,wordwrap($message,125,$split,true));
@@ -122,6 +122,47 @@ private function checkIfStudentExists($idnumber){
   	  curl_close($curl);
   	}
   }
+
+  function sendSMS($number,$message,$params=array()){
+        $number = $this->cleanNumber($number);
+        $curl = curl_init();
+        $curlopt = array(
+            CURLOPT_URL => 'https://api.txt4me.com/messages',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS =>
+            (http_build_query(array(
+                "message" => array(
+                    'to' => $number,
+                    'body' => $message,
+                    'from' => 'INFO'
+                    )
+            ))),
+            CURLOPT_HTTPHEADER => array(
+                "Content-Type: application/x-www-form-urlencoded",
+                "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTc5OTk4MjksImp0aSI6ImhHTFMyRHIwNFJqNnhnOElubFBPVkE9PSIsImlzcyI6Imh0dHBzOlwvXC9hcGkudHh0NG1lLmNvbSIsInN1YiI6IkdpZC04OTg0NjMgNmY6MWY6YTE6NWU6ZjU6MTA6YTM6N2U6MDI6YjI6OWE6MDM6NmI6NDY6ZWE6YzgiLCJuYW1lIjoidHh0NG1lX2FpbmdlbGMifQ.NVPjmkDQDt0AVMYm_cmlOvechARpZ3KgUxzn73M6fVY",
+                "X-Token: Secret 3e98cc8f50af5ec48e26142689838b7a3a7b55ee",
+                "cache-control: no-cache"
+            ),
+            #CURLOPT_SSL_VERIFYHOST => false,
+            #CURLOPT_SSL_VERIFYPEER => false,
+        );
+        curl_setopt_array($curl,$curlopt);
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+        curl_close($curl);
+
+        return array(
+            'response' => strpos($response,"{")!==false
+                ? json_decode($response)
+                : $response,
+            'error' => $error
+            );
+    }
 
   protected function isMobileNumber($number){
   	return strlen($number)==11 || strlen($number)==12;
@@ -168,6 +209,11 @@ private function checkIfStudentExists($idnumber){
     }
 
     if($dir == "192.168.8.224"){
+      # IP Address for Arduino in Exit ^
+      return "out";
+    }
+
+    if($dir == "127.0.0.1"){
       # IP Address for Arduino in Exit ^
       return "out";
     }
