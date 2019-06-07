@@ -92,7 +92,7 @@ class Calendar {
   function __construct() {}
   function __destruct() {}
 
-  public static function build_calendar($month,$year,$s) {
+  public static function build_calendar($month,$year) {
 
      // Create array containing abbreviations of days of week.
      $daysOfWeek = array('S','M','T','W','T','F','S');
@@ -116,7 +116,7 @@ class Calendar {
 
      // Create the table tag opener and day headers
 
-     $calendar = "<table class='table table-bordered center' style='width: auto; float: left; margin: 10px;'>";
+     $calendar = "<table class='table table-bordered center' style='width: auto; display: inline-block; margin: 10px; vertical-align: top;'>";
      $calendar .= "<thead class='thead-dark'><tr><th colspan=7>$monthName $year</th></tr></thead>";
      $calendar .= "<tr>";
 
@@ -160,8 +160,8 @@ class Calendar {
         $currentDayRel = str_pad($currentDay, 2, "0", STR_PAD_LEFT);
 
         $date = "$year-$month-$currentDayRel";
-        // $calendar .= "<td class='day' rel='$date'>$currentDay</td>";
-        $calendar .= self::studentHasRecord($date, $s);
+        $calendar .= "<td class='day' rel='$date'>$currentDay</td>";
+        // $calendar .= self::studentHasRecord($date, $s);
 
         // Increment counters
 
@@ -257,4 +257,8 @@ class Calendar {
     }
   }
 
+  public static function daysInMonth($m, $y) {
+    // return how many days the specified month is given the year
+    return cal_days_in_month(CAL_GREGORIAN, $m, $y);
+  }
 }

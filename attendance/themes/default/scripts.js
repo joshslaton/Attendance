@@ -67,7 +67,7 @@ function studentTable() {
       var ccode = $(this).val()
       $.ajax({
         type: "post",
-        url: 'http://localhost/models/loadStudentTable/',
+        url: url_base+'/models/loadStudentTable/',
         data: { ccode: ccode },
         success: function(data) {
           var obj = JSON.parse(data);
@@ -96,7 +96,7 @@ function loadStudentTable() {
 
     $.ajax({
       // url: "http://localhost/attendance/views/studentInfo",
-      url: "http://localhost/views/studentInfo/",
+      url: url_base+"views/studentInfo/",
       type: "post",
       data: {
         requestType: "requestInfo",
@@ -173,4 +173,29 @@ function  attendanceTable(time_records) {
   }
   return table;
 
+}
+
+function fillAttendance() {
+  var idnumber = "3800007";
+  var pc = $(".page-content");
+
+  $.ajax({
+    type: 'post',
+    url: url_base+'views/studentInfo/',
+    data: { idnumber: idnumber, requestType: "requestAttendance" },
+    success: function(data) {
+      var obj = JSON.parse(data)
+      console.log(obj);
+      for(var i = 0; i < obj.length; i ++) {
+        var d = obj[i].time.split(" ")[0];
+        var t = obj[i].time.split(" ")[1];
+        pc.find("tr[rel='"+d+"']").css({
+        "background-color": "rgb(0, 255, 0, 0.2)"
+        })
+        pc.find("tr[rel='"+d+"']").children("td[rel='time']").html(t)
+        pc.find("tr[rel='"+d+"']").children("td[rel='remarks']").html("Any notes goes here")
+      }
+    }
+
+  })
 }

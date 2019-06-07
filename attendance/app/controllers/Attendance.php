@@ -25,5 +25,11 @@ class Attendance {
     }
   }
 
+  public static function requestAttendance($idnumber) {
+    $q = "SELECT gate, time, remarks FROM proj_attendance WHERE idnumber = ?";
+    $results = db::query(array($q, array($idnumber)));
+    return $results;
+  }
+
 
 }

@@ -1,31 +1,34 @@
 <?php
-function createTable($monthName) {
-  $t = "<table class='table' style='width: auto;'>";
-  $t .= "<thead><tr><th>".$monthName."</th></tr></thead>";
-  $t .= "</table>";
-
-  return $t;
-}
+$content = "<div class='page-content' style='width: 100%;' data-script='fillAttendance'>";
 
 
-$content = "<div class='page-content' style='width: 100%;'>";
+$content .= "<div class='form-group'>";
+$content .= "Filter by Month and Year: ";
+$content .= "<div class='form-group' style='display: inline-block; margin: 5px;'>";
+  $content .= "<select class='form-control' style='width: auto;'>";
+  $content .= "<option selected>Month</option>";
+    for($m = 1; $m <= 12; $m ++) {
+      $content .= "<option>".date("F", mktime(0, 0, 0, $m, 1))."</option>";
+    }
+  $content .= "</select>";
+$content .= "</div>";
 
-if(isset($_SESSION["schoolYear"]) && $_SESSION["schoolYear"] != "") {
-  $q = "SELECT timestamp FROM proj_attendance WHERE idnumber = ? and syear = ?";
-  $results = Core\db::query(array($q,array($_GET["idnumber"], $_SESSION["schoolYear"])));
+$content .= "<div class='form-group' style='display: inline-block; margin: 5px;'>";
+  $content .= "<select class='form-control' style='width: auto;'>";
+  $content .= "<option selected>Year</option>";
+      $schoolYear = Core\db::query(array("SELECT name, syear FROM proj_sy WHERE isActive = 1"));
+      foreach($schoolYear as $sy) {
+        $content .= "<option value='".$sy["syear"]."'>".$sy["syear"]."</option>";
+      }
+  $content .= "</select>";
+$content .= "</div>";
+// $content .= "<input class='btn btn-primary' type='submit' value='Submit'>";
+$content .= "</div>";
 
-  $months = [];
+if(isset($_GET["idnumber"]) && $_GET["idnumber"] != "") {
+  $id = $_GET["idnumber"];
+  $sy = $_SESSION["schoolYear"];
 
-  foreach($results as $result) {
-    $m = explode("-",explode(" ", $result["timestamp"])[0])[1];
-    if(!in_array($m, $months))
-      array_push($months, $m);
-  }
-
-  foreach($months as $month) {
-    $monthName = date("F", mktime(0, 0, 0, $month, 1));
-    $content .= createTable($monthName);
-  }
 }
 
 $content .= '</div>';

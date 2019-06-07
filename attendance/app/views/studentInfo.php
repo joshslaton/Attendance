@@ -60,4 +60,9 @@ if(($_POST["requestType"]) == "requestInfo") {
     echo $content;
   }
 }
+
+if(($_POST["requestType"]) == "requestAttendance" && isset($_POST["idnumber"]) && $_POST["idnumber"] != "") {
+  $idnumber = $_POST["idnumber"];
+  echo json_encode(Core\Attendance::requestAttendance($idnumber));
+}
 ?>
