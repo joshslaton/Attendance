@@ -53,7 +53,7 @@ function gradeLevelFilter() {
   })
 }
 
-function studentTable() {
+function getListOfStudents() {
   var pc = $(".page-content");
   var t = $(".studentTable");
   t.find("thead").css({
@@ -67,27 +67,77 @@ function studentTable() {
       var ccode = $(this).val()
       $.ajax({
         type: "post",
-        url: url_base+'/models/loadStudentTable/',
+        url: url_base+'/requests/student/listAllStudents/',
+        // url: url_base+'/models/loadStudentTable/',
         data: { ccode: ccode },
         success: function(data) {
+          // console.log(data)
           var obj = JSON.parse(data);
 
           for(var j = 0; j < obj.length; j++) {
             var id = obj[j].idnumber
             var n = obj[j].sname
-            t.find("tbody").append("<tr><td>"+id+"</td><td>"+n+"</td><td><a href='"+url_base+"views/reports/student/?idnumber="+id+"'>View</a> | <a href='#View'>Edit</a> | <a href='#View'>Print</a></td></tr>")
+            // t.find("tbody").append("<tr data-idnumber='"+id+"'><td>"+id+"</td><td>"+n+"</td><td><a href='"+url_base+"views/reports/student/?idnumber="+id+"'>View</a> | <a href='#Edit'>Edit</a> | <a href='#Print'>Print</a></td></tr>")
+            t.find("tbody").append("<tr data-idnumber='"+id+"'><td>"+id+"</td><td>"+n+"</td><td><a href='#View'>View</a> | <a href='#Edit'>Edit</a> | <a href='#Print'>Print</a></td></tr>")
           }
+
+          var table = $("#studentTable");
+          var a = table.children("tbody")
+          var b = a.children("tr")
+          var c = b.children("td:last-child")
+          c.find("a[href='#View']").click( function(e){
+            id = $(this).closest("tr").data("idnumber")
+            // create table
+            $.ajax({
+              // url: "http://localhost/attendance/views/studentInfo",
+              url: url_base+"requests/student/attendance/",
+              type: "post",
+              data: {
+                idnumber: id
+              },
+              success: function(e) {
+                modalContainer(e);
+              },
+              error: function() {
+
+              }
+            })
+
+            // Fill student table with attendance
+            $.ajax({
+              // url: "http://localhost/attendance/views/studentInfo",
+              url: url_base+"requests/student/fillAttendanceSheet/",
+              type: "post",
+              data: {
+                idnumber: id
+              },
+              success: function(data) {
+                var table = $("#attendanceSheet");
+                obj = JSON.parse(data)
+
+                for(var i = 0; i < obj.length; i++) {
+                  var sDate = obj[i]["time"].split(" ")[0]
+                  var sTime = obj[i]["time"].split(" ")[1]
+                  var sTime = sTime.split(":")
+                  if(obj[i].gate == "in")
+                    table.find("td[rel='"+sDate+"']").append("<b>In: </b> "+sTime[0]+sTime[1]+"<br>")
+                  if(obj[i].gate == "out")
+                    table.find("td[rel='"+sDate+"']").append("<b>Out: </b> "+sTime[0]+sTime[1]+"<br>")
+                }
+              }
+            })
+
+          })
+          // c.css("background-color", "red")
         }
       })
     })
   })
-
-
 }
 
 function loadStudentTable() {
   var table = $("#studentTable");
-  var a = (table.children("thead"), table.children("tbody"));
+  var a = (table.children("thead"), table.children("tbody"))
   var b = a.children("tr")
   var c = b.children("td:last-child")
 
@@ -119,7 +169,7 @@ function modalContainer(e) {
   var c = "<div class='modalContainer'>" +
             "<div class='modalInfoContainer'>" + // container start
               "<div class='modalInfoHeader'>" +
-              "<div class='modalInfoTitle'>Attendance Information of: </div>" +
+              "<div class='modalInfoTitle'>Attendance Information</div>" +
               "<input class='btn btn-primary modalClose' type='button' value='Close'>" +
               "</div>" +
 
@@ -198,4 +248,8 @@ function fillAttendance() {
     }
 
   })
+}
+
+function test() {
+  console.log("test");
 }

@@ -7,7 +7,7 @@ $content .= "<div class='form-group'>";
 $content .= "<label for='grade'>Filter: </label>";
 
 $gradeLevels = Core\db::query(array("SELECT ccode, cname FROM proj_course", array()));
-$content .= "<select id='gradeSelect' data-script='studentTable'>";
+$content .= "<select id='gradeSelect' data-script='getListOfStudents'>";
 $content .= "<option selected='selected'>Filter by Grade</option>";
 foreach($gradeLevels as $g) {
   $content .= "<option value='".$g["ccode"]."'>".$g["cname"]."</option>";
@@ -15,7 +15,7 @@ foreach($gradeLevels as $g) {
 $content .= "</select>";
 
 $content .= "</div>";
-$content .= "<table class='table studentTable'>";
+$content .= "<table id='studentTable' class='table studentTable'>";
 $content .= "<thead>";
 $content .= "<tr><th>ID Number</th><th>Name</th><th>Attendance</th></tr>";
 $content .= "</thead>";

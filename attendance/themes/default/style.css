@@ -166,6 +166,10 @@ table {
   margin: 30px;
 }
 
+.modalInfoContainer table{
+  width: 100%;
+}
+
 .modalInfoHeader {
   border-bottom: 1px solid rgb(20, 122, 0);
 }
@@ -173,6 +177,7 @@ table {
 .modalInfoContent {
   background-color: rgb(255, 255, 255);
   padding: 5px;
+  width: 100%;
 }
 
 .modalInfoFooter {
@@ -190,4 +195,15 @@ table {
 
 .modalClose {
   margin: 5px;
+}
+
+
+/* ----- attendance sheets ----- */
+#attendanceSheet th{
+  border: 1px solid #ccc;
+  padding: 5px;
+}
+#attendanceSheet td{
+  border: 1px solid #ccc;
+  padding: 5px;
 }

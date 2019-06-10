@@ -7,4 +7,6 @@ class Student {
     $list = db::query(array("SELECT * FROM proj_student WHERE ccode = ?", array($grade)));
     return $list;
   }
+
+  
 }

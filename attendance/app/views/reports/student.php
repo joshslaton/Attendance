@@ -1,5 +1,5 @@
 <?php
-$content = "<div class='page-content' style='width: 100%;' data-script='fillAttendance'>";
+$content = "<div class='page-content' style='width: 100%;' data-script='showAttendance'>";
 
 
 $content .= "<div class='form-group'>";
