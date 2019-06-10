@@ -126,7 +126,6 @@ function getListOfStudents() {
                 }
               }
             })
-
           })
           // c.css("background-color", "red")
         }
