@@ -8,22 +8,6 @@ $(document).ready(function(){
   }
   systemBootstrap();
 
-  var acc = document.getElementsByClassName("accordion");
-  var i;
-
-  for(i = 0; i < acc.length; i++ ) {
-    acc[i].addEventListener("click", function() {
-      this.classList.toggle("active");
-
-      var panel = this.nextElementSibling;
-      if(panel.style.display === "block") {
-        panel.style.display = "none";
-      } else {
-        panel.style.display = "block";
-      }
-    })
-  }
-
 })
 
 // Functions outside load.
@@ -73,7 +57,6 @@ function getListOfStudents() {
         success: function(data) {
           // console.log(data)
           var obj = JSON.parse(data);
-
           for(var j = 0; j < obj.length; j++) {
             var id = obj[j].idnumber
             var n = obj[j].sname
@@ -86,6 +69,7 @@ function getListOfStudents() {
           var b = a.children("tr")
           var c = b.children("td:last-child")
           c.find("a[href='#View']").click( function(e){
+            e.preventDefault();
             id = $(this).closest("tr").data("idnumber")
             // create table
             $.ajax({
@@ -97,33 +81,38 @@ function getListOfStudents() {
               },
               success: function(e) {
                 modalContainer(e);
+                // Fill student table with attendance
+                $.ajax({
+                  // url: "http://localhost/attendance/views/studentInfo",
+                  url: url_base+"requests/student/fillAttendanceSheet/",
+                  type: "post",
+                  data: {
+                    idnumber: id
+                  },
+                  success: function(data) {
+                    table.ready(function(){
+                      var table = $("#attendanceSheet");
+
+                      obj = JSON.parse(data)
+                      for(var i = 0; i < obj.length; i++) {
+                        var sDate = obj[i]["time"].split(" ")[0]
+                        var sTime = obj[i]["time"].split(" ")[1]
+                        var sTime = sTime.split(":")
+                        if(obj[i].gate == "in")
+                        table.find("td[rel='"+sDate+"']").append("<b>In: </b> "+sTime[0]+sTime[1]+"<br>")
+                        if(obj[i].gate == "out")
+                        table.find("td[rel='"+sDate+"']").append("<b>Out: </b> "+sTime[0]+sTime[1]+"<br>")
+                      }
+                    })
+
+                  },
+                  error: function(e) {
+                    console.log(e)
+                  }
+                })
               },
-              error: function() {
-
-              }
-            })
-
-            // Fill student table with attendance
-            $.ajax({
-              // url: "http://localhost/attendance/views/studentInfo",
-              url: url_base+"requests/student/fillAttendanceSheet/",
-              type: "post",
-              data: {
-                idnumber: id
-              },
-              success: function(data) {
-                var table = $("#attendanceSheet");
-                obj = JSON.parse(data)
-
-                for(var i = 0; i < obj.length; i++) {
-                  var sDate = obj[i]["time"].split(" ")[0]
-                  var sTime = obj[i]["time"].split(" ")[1]
-                  var sTime = sTime.split(":")
-                  if(obj[i].gate == "in")
-                    table.find("td[rel='"+sDate+"']").append("<b>In: </b> "+sTime[0]+sTime[1]+"<br>")
-                  if(obj[i].gate == "out")
-                    table.find("td[rel='"+sDate+"']").append("<b>Out: </b> "+sTime[0]+sTime[1]+"<br>")
-                }
+              error: function(e) {
+                console.log(e)
               }
             })
           })

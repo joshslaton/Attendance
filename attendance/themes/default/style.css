@@ -167,7 +167,7 @@ table {
 }
 
 .modalInfoContainer table{
-  width: 100%;
+  width: 100% !important;
 }
 
 .modalInfoHeader {
@@ -199,11 +199,11 @@ table {
 
 
 /* ----- attendance sheets ----- */
-#attendanceSheet th{
+/* #attendanceSheet th{
   border: 1px solid #ccc;
   padding: 5px;
 }
 #attendanceSheet td{
   border: 1px solid #ccc;
   padding: 5px;
-}
+} */
