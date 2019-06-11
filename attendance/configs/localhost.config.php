@@ -22,8 +22,8 @@ $config['dir']['plugins'] = $config['dir']['root'] . DIRECTORY_SEPARATOR . 'plug
 
 $config['database'] = array(
   'host' => 'localhost',
-  'username' => 'root',
-  'password' => 'esxivmware',
+  'username' => 'kiosk',
+  'password' => 'kiosk',
   'database' => 'preschool_gatekeeper'
 );
 

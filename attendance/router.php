@@ -20,7 +20,7 @@ foreach ($routes as $route) {
 $routePath.='.php';
 
 if(file_exists($routePath) && is_file($routePath)) {
-  if(!in_array("requests", explode("/", $routePath))) {
+  if(!in_array("Requests", explode("/", $routePath))) {
       ob_start();
       require_once($routePath);
       $html = ob_get_contents();

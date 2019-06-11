@@ -1,9 +1,6 @@
 <?php
   session_start();
-  $schoolYear = Core\Attendance::schoolYear("set");
-  $_SESSION["schoolYear"] = $schoolYear["syear"];
   // $title = Core\Registry::get('config/page_title');
-
   $html = "<html>";
   $html .= "<head>";
   $html .= '<title>'.Core\Registry::get('config/page_title').'</title>';
@@ -33,20 +30,21 @@
       $menu .= '</div>';
     $menu .= '</div>';
 
-    // $menu .= '<div class="dropdown">';
-    // $menu .= '<span><a href="'.Core\Registry::get('config/url/base').'views/reports/">School Year</a></span>';
-    // $schoolYear = Core\Attendance::schoolYear();
-    //   $menu .= '<div class="dropdown-content">';
-    //   foreach($schoolYear  as $year) {
-    //     $menu .= "<div><a href='".Core\Registry::get("config/url/base")."views/reports/student/'>".$year["name"]."</a></div>";
-    //   }
-    //   $menu .= '</div>';
-    // $menu .= '</div>';
+    $schoolYear = Core\db::query(array("SELECT name, syear FROM proj_sy WHERE isActive = 1", array()));
+    if(sizeof($schoolYear) > 0) {
+      $menu .= '<div class="dropdown">';
+      $menu .= '<span><a href="'.Core\Registry::get('config/url/base').'views/reports/">School Year</a></span>';
+        $menu .= '<div class="dropdown-content">';
+        foreach($schoolYear as $year) {
+          $menu .= "<div><a href='".Core\Registry::get("config/url/base")."Requests/SchoolYear/set/?schoolYear=".$year["syear"]."'>".$year["name"]."</a></div>";
+        }
+        $menu .= '</div>';
+      $menu .= '</div>';
 
-    // $menu .= '<div class="dropdown">';
-    // $menu .= '<span>Logout</span>';
-    // $menu .= '</div>';
-
+      $menu .= '<div class="dropdown">';
+      $menu .= '<span>Logout</span>';
+      $menu .= '</div>';
+    }
   $menu .= '</div>'; // End of Page Header Div
   // $menu .= '<div class="page-content">'; // End of Page Header Div
 

@@ -45,54 +45,56 @@ function getListOfStudents() {
     "color": "white",
   })
   var g = $('#gradeSelect');
-  g.change( function() {
-    t.find("tbody").html("")
-    g.each( function(){
-      var ccode = $(this).val()
-      $.ajax({
-        type: "post",
-        url: url_base+'/requests/student/listAllStudents/',
-        // url: url_base+'/models/loadStudentTable/',
-        data: { ccode: ccode },
-        success: function(data) {
-          // console.log(data)
-          var obj = JSON.parse(data);
-          for(var j = 0; j < obj.length; j++) {
-            var id = obj[j].idnumber
-            var n = obj[j].sname
-            // t.find("tbody").append("<tr data-idnumber='"+id+"'><td>"+id+"</td><td>"+n+"</td><td><a href='"+url_base+"views/reports/student/?idnumber="+id+"'>View</a> | <a href='#Edit'>Edit</a> | <a href='#Print'>Print</a></td></tr>")
-            t.find("tbody").append("<tr data-idnumber='"+id+"'><td>"+id+"</td><td>"+n+"</td><td><a href='#View'>View</a> | <a href='#Edit'>Edit</a> | <a href='#Print'>Print</a></td></tr>")
-          }
+  var v = $('#viewSelect');
+  var b = $('#search');
 
-          var table = $("#studentTable");
-          var a = table.children("tbody")
-          var b = a.children("tr")
-          var c = b.children("td:last-child")
-          c.find("a[href='#View']").click( function(e){
-            e.preventDefault();
-            id = $(this).closest("tr").data("idnumber")
-            // create table
-            $.ajax({
-              // url: "http://localhost/attendance/views/studentInfo",
-              url: url_base+"requests/student/attendance/",
-              type: "post",
-              data: {
-                idnumber: id
-              },
-              success: function(e) {
-                modalContainer(e);
-                // Fill student table with attendance
-                $.ajax({
-                  // url: "http://localhost/attendance/views/studentInfo",
-                  url: url_base+"requests/student/fillAttendanceSheet/",
-                  type: "post",
-                  data: {
-                    idnumber: id
-                  },
-                  success: function(data) {
-                    table.ready(function(){
+  b.on("click", function(){
+    if(g.val() != "" && v.val() != "") {
+      t.find("tbody").html("")
+      g.each( function(){
+        var ccode = $(this).val()
+        $.ajax({
+          type: "post",
+          url: url_base+'Requests/Student/ListAllStudentsByGrade/',
+          // url: url_base+'/models/loadStudentTable/',
+          data: { ccode: ccode },
+          success: function(data) {
+            // console.log(data)
+            var obj = JSON.parse(data);
+            for(var j = 0; j < obj.length; j++) {
+              var id = obj[j].idnumber
+              var n = obj[j].sname
+              // t.find("tbody").append("<tr data-idnumber='"+id+"'><td>"+id+"</td><td>"+n+"</td><td><a href='"+url_base+"views/reports/student/?idnumber="+id+"'>View</a> | <a href='#Edit'>Edit</a> | <a href='#Print'>Print</a></td></tr>")
+              t.find("tbody").append("<tr data-idnumber='"+id+"'><td>"+id+"</td><td>"+n+"</td><td><a href='#View'>View</a> | <a href='#Edit'>Edit</a> | <a href='#Print'>Print</a></td></tr>")
+            }
+
+            var table = $("#studentTable");
+            var a = table.children("tbody")
+            var b = a.children("tr")
+            var c = b.children("td:last-child")
+            c.find("a[href='#View']").click( function(e){
+              e.preventDefault();
+              id = $(this).closest("tr").data("idnumber")
+              // create table
+              $.ajax({
+                // url: "http://localhost/attendance/views/studentInfo",
+                url: url_base+"Requests/Student/ShowAttendanceSheet/",
+                type: "post",
+                data: {
+                  calendarType: v.val()
+                },
+                success: function(e) {
+                  modalContainer(e, id);
+                  // Fill student table with attendance
+                  $.ajax({
+                    // url: "http://localhost/attendance/views/studentInfo",
+                    url: url_base+"Requests/Student/fillAttendanceSheet/",
+                    type: "post",
+                    data: {
+                      idnumber: id
+                    },
+                    success: function(data) {
                       var table = $("#attendanceSheet");
-
                       obj = JSON.parse(data)
                       for(var i = 0; i < obj.length; i++) {
                         var sDate = obj[i]["time"].split(" ")[0]
@@ -103,23 +105,15 @@ function getListOfStudents() {
                         if(obj[i].gate == "out")
                         table.find("td[rel='"+sDate+"']").append("<b>Out: </b> "+sTime[0]+sTime[1]+"<br>")
                       }
-                    })
-
-                  },
-                  error: function(e) {
-                    console.log(e)
-                  }
-                })
-              },
-              error: function(e) {
-                console.log(e)
-              }
+                    }
+                  })
+                }
+              })
             })
-          })
-          // c.css("background-color", "red")
-        }
+          }
+        })
       })
-    })
+    }
   })
 }
 
@@ -150,15 +144,16 @@ function loadStudentTable() {
   })
 }
 
-function modalContainer(e) {
+function modalContainer(e, id) {
   // console.log(e)
   // var student = JSON.parse(e);
   // var timeRecords = timeRecordsTable(student.time_records);
   var c = "<div class='modalContainer'>" +
             "<div class='modalInfoContainer'>" + // container start
               "<div class='modalInfoHeader'>" +
-              "<div class='modalInfoTitle'>Attendance Information</div>" +
+              "<div class='modalInfoTitle'>Attendance Information Of "+ id +"</div>" +
               "<input class='btn btn-primary modalClose' type='button' value='Close'>" +
+              "<input class='btn btn-success modalPrint' type='button' value='Print'>" +
               "</div>" +
 
               "<div class='modalInfoContent'>" +
@@ -173,7 +168,44 @@ function modalContainer(e) {
   $("body").append(c);
   $(".modalContainer").css("display", "block");
 
+  printModalContents();
   closeModalContainer();
+}
+
+function printModalContents() {
+  var s = $(".modalPrint");
+  s.click( function() {
+    var c = $(".modalInfoContent").html();
+    var p = window.open('', 'Print', 'width=600, height=600');
+    var htmlToPrint = '' +
+        '<style type="text/css">' +
+        'table th, table td {' +
+        'border: solid #ccc !important;' +
+        'border-width: 0 1px 1px 0 !important;' +
+        'padding: 0.2em' +
+        '}' +
+        'table td {' +
+        'font-size: 0.6em' +
+        '}' +
+        '</style>';
+    p.document.write("<html>")
+    p.document.write("<head>");
+    p.document.write("<title>Print Document</title>");
+    p.document.write(htmlToPrint);
+    p.document.write("<link href='http://localhost/themes/default/style.css' rel='stylesheet'>");
+    p.document.write("</head>");
+    p.document.write("<body>");
+    p.document.write(c);
+    p.document.write("</body>");
+    p.document.write("</html>");
+    // p.document.close();
+    p.focus();
+
+    p.print();
+    p.close();
+
+    return true;
+  })
 }
 
 function closeModalContainer() {
