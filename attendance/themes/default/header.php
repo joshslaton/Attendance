@@ -45,8 +45,22 @@
       $menu .= '<span>Logout</span>';
       $menu .= '</div>';
     }
+
+    $menu .= '<div class="dropdown" style="float: right;">';
+    if(!isset($_SESSION["schoolYear"])) {
+      if($results = Core\db::query(array("SELECT * FROM proj_sy WHERE isDefault = 1"))) {
+        $results = $results[0];
+        $_SESSION["schoolYear"] = $results["syear"];
+        $menu .= "Current School Year: ".$results["syear"];
+      } else {
+        $_SESSION["schoolYear"] = date("Y");
+      }
+    } else {
+      $menu .= "Current School Year: ".$_SESSION["schoolYear"];
+    }
+    $menu .= '</div>';
+
   $menu .= '</div>'; // End of Page Header Div
-  // $menu .= '<div class="page-content">'; // End of Page Header Div
 
   echo $menu;
 ?>

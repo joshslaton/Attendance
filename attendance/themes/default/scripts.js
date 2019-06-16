@@ -46,9 +46,9 @@ function getListOfStudents() {
   })
   var g = $('#gradeSelect');
   var v = $('#viewSelect');
-  var b = $('#search');
+  var btn = $('#search');
 
-  b.on("click", function(){
+  btn.on("click", function(){
     if(g.val() != "" && v.val() != "") {
       t.find("tbody").html("")
       g.each( function(){
@@ -59,7 +59,6 @@ function getListOfStudents() {
           // url: url_base+'/models/loadStudentTable/',
           data: { ccode: ccode },
           success: function(data) {
-            // console.log(data)
             var obj = JSON.parse(data);
             for(var j = 0; j < obj.length; j++) {
               var id = obj[j].idnumber
@@ -85,28 +84,71 @@ function getListOfStudents() {
                 },
                 success: function(e) {
                   modalContainer(e, id);
+
                   // Fill student table with attendance
-                  $.ajax({
-                    // url: "http://localhost/attendance/views/studentInfo",
-                    url: url_base+"Requests/Student/fillAttendanceSheet/",
-                    type: "post",
-                    data: {
-                      idnumber: id
-                    },
-                    success: function(data) {
-                      var table = $("#attendanceSheet");
-                      obj = JSON.parse(data)
-                      for(var i = 0; i < obj.length; i++) {
-                        var sDate = obj[i]["time"].split(" ")[0]
-                        var sTime = obj[i]["time"].split(" ")[1]
-                        var sTime = sTime.split(":")
-                        if(obj[i].gate == "in")
-                        table.find("td[rel='"+sDate+"']").append("<b>In: </b> "+sTime[0]+sTime[1]+"<br>")
-                        if(obj[i].gate == "out")
-                        table.find("td[rel='"+sDate+"']").append("<b>Out: </b> "+sTime[0]+sTime[1]+"<br>")
+                  if( v.val() == "DTR"){
+                    $.ajax({
+                      // url: "http://localhost/attendance/views/studentInfo",
+                      url: url_base+"Requests/Student/fillAttendanceSheet/",
+                      type: "post",
+                      data: {
+                        idnumber: id,
+                        calendarType: v.val()
+                      },
+                      success: function(data) {
+                        var table = $("#attendanceSheet");
+                        obj = JSON.parse(data)
+                        // console.log(obj)
+                        for(var i = 0; i < obj.length; i++) {
+                          var sDate = obj[i]["time"].split(" ")[0]
+                          var sTime = obj[i]["time"].split(" ")[1]
+                          var sTime = sTime.split(":")
+
+                          if(obj[i].gate == "in")
+                            table.find("td[rel='"+sDate+"']").append("<b>In: </b> "+sTime[0]+sTime[1]+"<br>")
+                          if(obj[i].gate == "out")
+                            table.find("td[rel='"+sDate+"']").append("<b>Out: </b> "+sTime[0]+sTime[1]+"<br>")
+                        }
                       }
-                    }
-                  })
+                    })
+                  }
+                  if( v.val() == "Classcard"){
+                    console.log("[+] Classcard")
+                    $.ajax({
+                      // url: "http://localhost/attendance/views/studentInfo",
+                      url: url_base+"Requests/Student/fillAttendanceSheet/",
+                      type: "post",
+                      data: {
+                        idnumber: id,
+                        calendarType: v.val()
+                      },
+                      success: function(data) {
+                        var table = $("#attendanceSheet");
+                        obj = JSON.parse(data)
+
+                        Object.entries(obj).forEach(entry1 => {
+                        let label = entry1[0]
+                        let years = entry1[1]
+
+                        Object.entries(years).forEach(entry2 => {
+                          let year = entry2[0]
+                          let months = entry2[1]
+
+                          Object.entries(months).forEach(entry3 => {
+                            let monthName = entry3[0]
+                            let numberOfDaysPresent = entry3[1]
+
+                            // TODO: total, values according to proper label.
+                            if(label == "present") {
+                              table.find("td[rel='"+year+"-"+monthName+"']").html(numberOfDaysPresent)
+                            }
+                          })
+                        })
+                      })
+
+                      }
+                    })
+                  }
                 }
               })
             })

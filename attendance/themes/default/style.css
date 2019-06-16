@@ -202,11 +202,12 @@ table {
 }
 
 /* ----- attendance sheets ----- */
-/* #attendanceSheet th{
-  border: 1px solid #ccc;
-  padding: 5px;
+#attendanceYearLabel {
+  background-color: green;
+  color: white;
+  font-weight: bold;
 }
 #attendanceSheet td{
-  border: 1px solid #ccc;
-  padding: 5px;
-} */
+  /* border: 1px solid #ccc;
+  padding: 5px; */
+}

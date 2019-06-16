@@ -80,6 +80,7 @@ class Registry{
       self::$registry = array();
     }
     self::$registry[$var] = $val;
+
   }
 
 

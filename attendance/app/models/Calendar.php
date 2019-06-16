@@ -221,7 +221,7 @@ class Calendar {
     return False;
   }
 
-  public static function isHolday($date) {
+  public static function isHoliday($date) {
     return True;
     // $holidays = [
     //   1 => Array(1 => "New Year's Day", 2 => "New Year's Holiday"),

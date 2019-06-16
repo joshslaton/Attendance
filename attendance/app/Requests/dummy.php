@@ -1,6 +1,6 @@
 <?php
 $y = 2019;
-
+$content .= "<div class='page-content' style='width: 100%; height: calc(100% - 34px); padding: 10px;'>";
 for($i = 1; $i <= 12; $i++) {
   $numOfDays = date("t", mktime(0, 0, 0, $i, 1, $y));
   $timeIn = "08:00:00";
@@ -22,11 +22,11 @@ for($i = 1; $i <= 12; $i++) {
       // }
       // echo $dateOut;
       // echo "<br>";
-      $q = "INSERT INTO proj_attendance (`idnumber`, `gate`, `time`, `syear`, `remarks`) VALUES ('2900876', 'in', '$dateIn', '2018', 'Time-in');";
-      $w = "INSERT INTO proj_attendance (`idnumber`, `gate`, `time`, `syear`, `remarks`) VALUES ('2900876', 'out', '$dateOut', '2018', 'Time-out');";
-      echo $q."<br>";
-      echo $w."<br>";
-      // $results2 = Core\db::query("INSERT INTO proj_attendance ('idnumber', 'gate', 'time', 'syear', 'remarks') VALUES (?, ?, ?, ?, ?)", array("2900876", "out", "'".$dateOut."'", "2018", "Time-out"));
+      $q = "INSERT INTO proj_attendance (`idnumber`, `gate`, `time`, `syear`, `remarks`) VALUES ('0000000', 'in', '$dateIn', '2018', 'Time-in');";
+      $w = "INSERT INTO proj_attendance (`idnumber`, `gate`, `time`, `syear`, `remarks`) VALUES ('0000000', 'out', '$dateOut', '2018', 'Time-out');";
+      $content .= $q."<br>";
+      $content .= $w."<br>";
+      // $results2 =   Core\db::query("INSERT INTO proj_attendance ('idnumber', 'gate', 'time', 'syear', 'remarks') VALUES (?, ?, ?, ?, ?)", array("2900876", "out", "'".$dateOut."'", "2018", "Time-out"));
       // if($results2){
       //   echo $dateOut;
       //   echo "<br>";
@@ -34,3 +34,6 @@ for($i = 1; $i <= 12; $i++) {
     }
   }
 }
+$content .= "</div>";
+
+echo $content;
