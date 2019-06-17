@@ -202,12 +202,52 @@ table {
 }
 
 /* ----- attendance sheets ----- */
+#attendanceSheet {
+  table-layout: fixed !important;
+  width: 100%;
+  border: 1px solid black;
+}
+
 #attendanceYearLabel {
   background-color: green;
   color: white;
   font-weight: bold;
+  font-size: 2em;
 }
-#attendanceSheet td{
-  /* border: 1px solid #ccc;
-  padding: 5px; */
+#attendanceSheet td, #attendanceSheet th{
+  /* width: auto !important; */
+  white-space: nowrap;
+  width: 1px;
+  vertical-align: top;
+  border: 1px solid #ccc;
+
+}
+
+#dayLabel {
+  white-space: nowrap;
+  text-align: center;
+  width: 1px;
+  font-weight: bolder;
+}
+.row {
+  display: flex;
+  margin: 2px;
+}
+
+.column {
+  flex: 50%;
+}
+.column:first{
+  border-right: 1px solid #ccc;
+}
+.column-header {
+  font-size: 1em;
+  font-weight: bold;
+  /* border-bottom: 1px solid #ccc; */
+  text-align: center;
+  color: #ccc;
+}
+.column-content {
+  text-align: center;
+  padding: 3px;
 }

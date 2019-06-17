@@ -22,8 +22,8 @@ for($i = 1; $i <= 12; $i++) {
       // }
       // echo $dateOut;
       // echo "<br>";
-      $q = "INSERT INTO proj_attendance (`idnumber`, `gate`, `time`, `syear`, `remarks`) VALUES ('0000000', 'in', '$dateIn', '2018', 'Time-in');";
-      $w = "INSERT INTO proj_attendance (`idnumber`, `gate`, `time`, `syear`, `remarks`) VALUES ('0000000', 'out', '$dateOut', '2018', 'Time-out');";
+      $q = "INSERT INTO proj_attendance (`idnumber`, `gate`, `time`, `syear`, `remarks`) VALUES ('2900876', 'in', '$dateIn', '2018', 'Time-in');";
+      $w = "INSERT INTO proj_attendance (`idnumber`, `gate`, `time`, `syear`, `remarks`) VALUES ('2900876', 'out', '$dateOut', '2018', 'Time-out');";
       $content .= $q."<br>";
       $content .= $w."<br>";
       // $results2 =   Core\db::query("INSERT INTO proj_attendance ('idnumber', 'gate', 'time', 'syear', 'remarks') VALUES (?, ?, ?, ?, ?)", array("2900876", "out", "'".$dateOut."'", "2018", "Time-out"));

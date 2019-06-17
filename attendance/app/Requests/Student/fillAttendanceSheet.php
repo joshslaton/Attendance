@@ -1,8 +1,4 @@
 <?php
-$_POST["calendarType"] = "Classcard";
-$_POST["idnumber"] = "0000000";
-$_SESSION["schoolYear"] = "2018";
-
 if(isset($_POST["idnumber"]) && strlen($_POST["idnumber"]) == 7) {
   $idnumber = $_POST["idnumber"];
   $year = $_SESSION["schoolYear"];
@@ -30,14 +26,9 @@ if(isset($_POST["idnumber"]) && strlen($_POST["idnumber"]) == 7) {
         $q = "SELECT COUNT(DISTINCT day(time)) as '".$m."' FROM proj_attendance WHERE day(time) between 1 and 31 && month(time) = ? && year(time) = ? && idnumber = ? && syear = ?";
         $results = Core\db::query(array($q, array($i, $y, $idnumber, $year)));
         $temp["present"][$y] += $results[0];
-        // array_push($temp["present"][$y], $results[0]);
       }
     }
-    // echo "<pre>";
-    // print_r($temp);
-    // echo "</pre>";
     echo json_encode($temp);
-    // print_r($temp);
   }
 
 }

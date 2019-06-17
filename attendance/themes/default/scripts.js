@@ -80,7 +80,8 @@ function getListOfStudents() {
                 url: url_base+"Requests/Student/ShowAttendanceSheet/",
                 type: "post",
                 data: {
-                  calendarType: v.val()
+                  calendarType: v.val(),
+                  idnumber: id
                 },
                 success: function(e) {
                   modalContainer(e, id);
@@ -98,16 +99,16 @@ function getListOfStudents() {
                       success: function(data) {
                         var table = $("#attendanceSheet");
                         obj = JSON.parse(data)
-                        // console.log(obj)
                         for(var i = 0; i < obj.length; i++) {
                           var sDate = obj[i]["time"].split(" ")[0]
                           var sTime = obj[i]["time"].split(" ")[1]
                           var sTime = sTime.split(":")
-
-                          if(obj[i].gate == "in")
-                            table.find("td[rel='"+sDate+"']").append("<b>In: </b> "+sTime[0]+sTime[1]+"<br>")
-                          if(obj[i].gate == "out")
-                            table.find("td[rel='"+sDate+"']").append("<b>Out: </b> "+sTime[0]+sTime[1]+"<br>")
+                          if(obj[i].gate == "in"){
+                            table.find("td[rel='"+sDate+"']").find("#in").append(sTime[0]+":"+sTime[1]+"<br>")
+                          }
+                          if(obj[i].gate == "out"){
+                            table.find("td[rel='"+sDate+"']").find("#out").append(sTime[0]+":"+sTime[1]+"<br>")
+                          }
                         }
                       }
                     })
@@ -186,14 +187,14 @@ function loadStudentTable() {
   })
 }
 
-function modalContainer(e, id) {
+function modalContainer(e) {
   // console.log(e)
   // var student = JSON.parse(e);
   // var timeRecords = timeRecordsTable(student.time_records);
   var c = "<div class='modalContainer'>" +
             "<div class='modalInfoContainer'>" + // container start
               "<div class='modalInfoHeader'>" +
-              "<div class='modalInfoTitle'>Attendance Information Of "+ id +"</div>" +
+              "<div class='modalInfoTitle'>Attendance Information</div>" +
               "<input class='btn btn-primary modalClose' type='button' value='Close'>" +
               "<input class='btn btn-success modalPrint' type='button' value='Print'>" +
               "</div>" +
@@ -220,21 +221,56 @@ function printModalContents() {
     var c = $(".modalInfoContent").html();
     var p = window.open('', 'Print', 'width=600, height=600');
     var htmlToPrint = '' +
-        '<style type="text/css">' +
-        'table th, table td {' +
-        'border: solid #ccc !important;' +
-        'border-width: 0 1px 1px 0 !important;' +
-        'padding: 0.2em' +
-        '}' +
-        'table td {' +
-        'font-size: 0.6em' +
-        '}' +
-        '</style>';
-    p.document.write("<html>")
+    '<style type="text/css">' +
+    `
+    @font-face {
+        font-family: 'Montserrat';
+        src: url('fonts/Montserrat-Light.otf');
+        src: url('fonts/Montserrat-Light.otf') format('opentype');
+    }
+
+    * {
+      font-family: 'Arial', sans-serif;
+    }
+
+    table {
+      table-layout: fixed !important;
+    }
+
+    #attendanceYearLabel {
+      background-color: green;
+      color: white;
+      font-weight: bold;
+    }
+    td, th{
+      /* width: auto !important; */
+      white-space: nowrap;
+      width: 1px;
+      font-size: 0.7em;
+    }
+
+    .row {
+      display: flex;
+      margin: 2px;
+    }
+
+    .column {
+      flex: 50%;
+      margin: 2px;
+    }
+    .column-header {
+      font-size: .5em;
+      font-weight: bold;
+      border-bottom: 1px solid #ccc;
+      color: #ccc;
+    }` +
+    '</style>';
+
+    p.document.write("<html>");
     p.document.write("<head>");
     p.document.write("<title>Print Document</title>");
     p.document.write(htmlToPrint);
-    p.document.write("<link href='http://localhost/themes/default/style.css' rel='stylesheet'>");
+    // p.document.write("<link href='http://localhost/themes/default/style.css' rel='stylesheet'>");
     p.document.write("</head>");
     p.document.write("<body>");
     p.document.write(c);
