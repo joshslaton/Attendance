@@ -81,14 +81,14 @@ if($_POST["action"] != NULL) {
 
           $tbl .= "<tbody>";
           foreach($labels as $label) {
-            $tbl .= "<tr>";
+            $tbl .= "<tr rel='$year-$label'>";
             for($m = 0; $m <= 13; $m++){
               if($m == 0)
                 $tbl .= "<td>".ucfirst($label)."</td>";
               elseif ($m == 13)
-                $tbl .= "<td rel='$label total'></td>";
+                $tbl .= "<td></td>";
               else
-                $tbl .= "<td rel='$year-$m $label' id='$label'></td>";
+                $tbl .= "<td rel='$year-$m $label' data-label='$year-$label'></td>";
             }
             $tbl .= "</tr>";
           }

@@ -148,7 +148,6 @@ function getListOfStudents() {
                           })
                         })
                       }) // Object.entries
-                      // Compute total
                       computetotal()
                       }
                     })
@@ -164,14 +163,25 @@ function getListOfStudents() {
 }
 
 function computetotal() {
-  var table = $("#attendanceSheet");
-  var tb = table.children("tbody")
-  var l = tb.children("tr").find("td[id='present']")
-  var total = 0
-  l.each(function(data){
-    total += parseInt($(this).html())
+  var t = $("#attendanceSheet");
+  var th = t.children("thead")
+  var tb = t.children("tbody")
+  var labels = new Array("present", "absent", "tardy")
+  th.each(function(){
+
+    var year = $(this).children("tr").children("th:first").html()
+    for(label of labels){
+      if(label == "present"){
+        var total = 0
+        tb.children("tr").children("td[data-label='"+year+"-"+label+"']").each(function(){
+          var v = $(this).html()
+          // console.log(v)
+          total += parseInt(v)
+        })
+        tb.children("tr[rel='"+year+"-"+label+"']").children("td:last-child").html(total)
+      }
+    }
   })
-  table.find("td[rel='present total']").html(total)
 }
 
 function loadStudentTable() {
