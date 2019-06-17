@@ -228,6 +228,7 @@ table {
   text-align: center;
   width: 1px;
   font-weight: bolder;
+  vertical-align: middle;
 }
 .row {
   display: flex;

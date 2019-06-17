@@ -77,11 +77,12 @@ function getListOfStudents() {
               // create table
               $.ajax({
                 // url: "http://localhost/attendance/views/studentInfo",
-                url: url_base+"Requests/Student/ShowAttendanceSheet/",
+                url: url_base+"Requests/Student/AttendanceSheet/",
                 type: "post",
                 data: {
-                  calendarType: v.val(),
-                  idnumber: id
+                  idnumber: id,
+                  action: "view",
+                  viewType: v.val()
                 },
                 success: function(e) {
                   modalContainer(e, id);
@@ -90,11 +91,12 @@ function getListOfStudents() {
                   if( v.val() == "DTR"){
                     $.ajax({
                       // url: "http://localhost/attendance/views/studentInfo",
-                      url: url_base+"Requests/Student/fillAttendanceSheet/",
+                      url: url_base+"Requests/Student/AttendanceSheet/",
                       type: "post",
                       data: {
                         idnumber: id,
-                        calendarType: v.val()
+                        action: "update",
+                        viewType: v.val()
                       },
                       success: function(data) {
                         var table = $("#attendanceSheet");
@@ -114,14 +116,14 @@ function getListOfStudents() {
                     })
                   }
                   if( v.val() == "Classcard"){
-                    console.log("[+] Classcard")
                     $.ajax({
                       // url: "http://localhost/attendance/views/studentInfo",
-                      url: url_base+"Requests/Student/fillAttendanceSheet/",
+                      url: url_base+"Requests/Student/AttendanceSheet/",
                       type: "post",
                       data: {
                         idnumber: id,
-                        calendarType: v.val()
+                        action: "update",
+                        viewType: v.val()
                       },
                       success: function(data) {
                         var table = $("#attendanceSheet");
@@ -141,12 +143,13 @@ function getListOfStudents() {
 
                             // TODO: total, values according to proper label.
                             if(label == "present") {
-                              table.find("td[rel='"+year+"-"+monthName+"']").html(numberOfDaysPresent)
+                              table.find("td[rel='"+year+"-"+monthName+" "+label+"']").html(numberOfDaysPresent)
                             }
                           })
                         })
-                      })
-
+                      }) // Object.entries
+                      // Compute total
+                      computetotal()
                       }
                     })
                   }
@@ -158,6 +161,17 @@ function getListOfStudents() {
       })
     }
   })
+}
+
+function computetotal() {
+  var table = $("#attendanceSheet");
+  var tb = table.children("tbody")
+  var l = tb.children("tr").find("td[id='present']")
+  var total = 0
+  l.each(function(data){
+    total += parseInt($(this).html())
+  })
+  table.find("td[rel='present total']").html(total)
 }
 
 function loadStudentTable() {
