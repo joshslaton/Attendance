@@ -372,6 +372,20 @@ function fillAttendance() {
   })
 }
 
-function test() {
-  console.log("test");
+function schoolYear() {
+  var d = $(".schoolYear")
+  d.on("click", function(e){
+    if(e.target !== e.currentTarget) return;
+
+    var o = $(".schoolYearOptions")
+    if(o.css("display") == "none"){
+      o.css({
+        "display": "block"
+      })
+    }
+    else if(o.css("display") == "block"){
+      o.css("display", "none")
+    }
+
+  })
 }

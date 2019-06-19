@@ -9,6 +9,16 @@
   /* display: block; */
 }
 
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
 th {
   text-align: center;
 }
@@ -42,10 +52,12 @@ table {
   overflow: hidden;
 }
 
+/* Header */
 .page-header {
   display: block;
   /* border-bottom: 1px solid #ccc; */
   box-shadow: 0px 5px 20px 0px rgba(0,0,0,0.2);
+  z-index: 1;
 }
 
 .dropdown {
@@ -87,6 +99,40 @@ table {
   background-color: green;
 }
 
+.schoolYear {
+  position: relative;
+  float: right;
+  display: block;
+  border-right: 1px solid #ccc;
+  padding: 5px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.schoolYearOptions {
+  position: absolute;
+  width: 400px;
+  background-color: rgb(0, 0, 0, 0);
+  box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.2);
+  margin-top: 5px;
+  right: 0px;
+  padding: 15px;
+  display: none;
+  index: 2;
+}
+
+.schoolYearOptionsLabel {
+  font-weight: bold;
+}
+.setButton {
+  background-color: green;
+  padding: 10px;
+  color: white;
+  font-weight: bold;
+  border-radius: 0 5px 0 5px;
+  margin: 10px;
+}
+/* Content */
 .page-content {
   position: relative;
   display: inline-block;
@@ -150,7 +196,7 @@ table {
 .modalContainer {
   display: none;
   position: fixed;
-  z-index: 1;
+  z-index: 100;
   top: 0;
   left: 0;
   width: 100%;
