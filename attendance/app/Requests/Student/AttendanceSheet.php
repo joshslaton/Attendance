@@ -7,7 +7,8 @@ if($_SESSION["term"] != NULL && $_SESSION["schoolYear"] != NULL) {
   /*
   For Junior and Senior High
   Set period accord to semester
-
+  TODO: Display student info
+  TODO: Display whole school year, divided by semester
   */
   if(strpos($term, "1st") !== false) {
     $periodStart = DateTime::createFromFormat("Y-m-d", "$year-08-01");
@@ -78,7 +79,8 @@ if($_POST["action"] != NULL) {
         echo $tbl;
       }
 
-    }else {
+    }
+    else {
       if($_POST["viewType"] == "DTR"){
         $range = array();
         array_push($range, $year);

@@ -111,9 +111,9 @@ table {
 
 .schoolYearOptions {
   position: absolute;
-  background-color: rgb(0, 0, 0, 0);
+  background-color: white;
   box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.2);
-  top: 37px;
+  top: 35px;
   right: 0px;
   padding: 15px;
   z-index: 3;
@@ -185,6 +185,18 @@ table {
   background-color: white;
   display: none;
   overflow: hidden;
+}
+.reportsOptions {
+  border-top: 3px double #000;
+  border-bottom: 3px double #000;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.reportsOptions > * {
+  display: inline-block;
+  margin-right: 10px;
 }
 /* ----- CALENDAR ----- */
 
