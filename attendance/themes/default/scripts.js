@@ -74,6 +74,15 @@ function getListOfStudents() {
             c.find("a[href='#View']").click( function(e){
               e.preventDefault();
               id = $(this).closest("tr").data("idnumber")
+              // Checks if "11" or "12" in select
+              var isKto12 = 0;
+
+              if(g.val().indexOf("11") !== -1) {
+                isKto12 = 1
+              }
+              else if (g.val().indexOf("11") !== -1) {
+                isKto12 = 1
+              }
               // create table
               $.ajax({
                 // url: "http://localhost/attendance/views/studentInfo",
@@ -82,7 +91,8 @@ function getListOfStudents() {
                 data: {
                   idnumber: id,
                   action: "view",
-                  viewType: v.val()
+                  viewType: v.val(),
+                  Kto12: isKto12
                 },
                 success: function(e) {
                   modalContainer(e, id);
@@ -374,18 +384,30 @@ function fillAttendance() {
 
 function schoolYear() {
   var d = $(".schoolYear")
+  var t = $("#term");
+
+  // Toggle display options
   d.on("click", function(e){
     if(e.target !== e.currentTarget) return;
-
     var o = $(".schoolYearOptions")
     if(o.css("display") == "none"){
-      o.css({
-        "display": "block"
-      })
+      o.css("display", "inline-block")
     }
     else if(o.css("display") == "block"){
       o.css("display", "none")
     }
 
+  })
+
+  $(".setButton").on("click", function(e){
+    $.ajax({
+      type: "post",
+      url: url_base + "Requests/SchoolYear/set/",
+      data: { term: t.val() },
+      success: function(data) {
+        location.reload()
+        console.log(data)
+      }
+    })
   })
 }

@@ -1,5 +1,6 @@
 <?php
   session_start();
+  Core\Term::set();
   // $title = Core\Registry::get('config/page_title');
   $html = "<html>";
   $html .= "<head>";
@@ -30,37 +31,25 @@
       $menu .= '</div>';
     $menu .= '</div>';
 
-    $schoolYear = Core\db::query(array("SELECT name, syear FROM proj_sy WHERE isActive = 1", array()));
-    if(sizeof($schoolYear) > 0) {
-      $menu .= '<div class="dropdown">';
-      $menu .= '<span><a href="'.Core\Registry::get('config/url/base').'views/reports/">School Year</a></span>';
-        $menu .= '<div class="dropdown-content">';
-        foreach($schoolYear as $year) {
-          $menu .= "<div><a href='".Core\Registry::get("config/url/base")."Requests/SchoolYear/set/?schoolYear=".$year["syear"]."'>".$year["name"]."</a></div>";
-        }
-        $menu .= '</div>';
-      $menu .= '</div>';
-
-      $menu .= "<div class=\"dropdown\">";
-      $menu .= "<span>Logout</span>";
-      $menu .= "</div>";
-    }
+    $menu .= "<div class=\"dropdown\">";
+    $menu .= "<span>Logout</span>";
+    $menu .= "</div>";
 
     $menu .= "<div class='schoolYear' data-script='schoolYear'>";
-    if(!isset($_SESSION["schoolYear"])) {
-      if($results = Core\db::query(array("SELECT * FROM proj_sy WHERE isDefault = 1"))) {
-        $results = $results[0];
-        $_SESSION["schoolYear"] = $results["syear"];
-        $menu .= "Current School Year: ".$results["syear"];
-      } else {
-        $_SESSION["schoolYear"] = date("Y");
-      }
+
+    if(!isset($_SESSION["term"])) {
+      $menu .= "<b>Term:</b> Click here to SET";
     } else {
-      $menu .= "Current School Year: ".$_SESSION["schoolYear"];
+      $menu .= "<b>Term:</b> ".$_SESSION["term"];
     }
+
       $menu .= "<div class='schoolYearOptions'>";
-      $menu .= "<label for=\"termPeriod\" class=\"schoolYearOptionsLabel\">Start - End: </label>";
-      $menu .= "<input id=\"termPeriod\" type=\"text\" style='width: 75px;'> - <input type=\"text\" style='width: 75px;'></input>";
+        $menu .= "<select id=\"term\">";
+        $term = Core\db::query(array("SELECT tname FROM proj_term"));
+        foreach($term as $t) {
+          $menu .= "<option>".$t["tname"]."</option>";
+        }
+        $menu .= "</select>";
       $menu .= "<span class=\"setButton\">Set</span>";
       $menu .= "</div>";
     $menu .= "</div>";

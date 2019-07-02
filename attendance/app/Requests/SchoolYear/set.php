@@ -1,11 +1,11 @@
 <?php
-if(isset($_GET["schoolYear"]) && $_GET["schoolYear"] != '') {
-  $prev = $_SERVER["HTTP_REFERER"];
-  if($_SESSION["schoolYear"] != $_GET["schoolYear"]){
-    $_SESSION["schoolYear"] = $_GET["schoolYear"];
-    echo "Set";
-    header("Location: ".$prev);
+// For ajax call
+if(!empty($_POST["term"])) {
+  $term = $_POST["term"];
+  if(preg_match("([0-9]{4}-[0-9]{4})", $term, $match)) {
+    $_SESSION["schoolYear"] = explode("-", $match[0])[0];
+    $_SESSION["term"] = $term;
   } else {
-    header("Location: ".$prev);
+
   }
 }
