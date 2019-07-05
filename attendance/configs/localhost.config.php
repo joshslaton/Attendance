@@ -23,9 +23,9 @@ $config['dir']['plugins'] = $config['dir']['root'] . DIRECTORY_SEPARATOR . 'plug
 
 $config['database'] = array(
   'host' => 'localhost',
-  'username' => 'root',
-  'password' => 'esxivmware',
-  'database' => 'preschool_gatekeeper'
+  'username' => 'kiosk',
+  'password' => 'kiosk',
+  'database' => 'proj_gatekeeper'
 );
 
 Core\Registry::set('config', $config); # Whats the purpose of this?

@@ -52,12 +52,12 @@ function getListOfStudents() {
     if(g.val() != "" && v.val() != "") {
       t.find("tbody").html("")
       g.each( function(){
-        var ccode = $(this).val()
+        var ylevel = $(this).val()
         $.ajax({
           type: "post",
           url: url_base+'Requests/Student/ListAllStudentsByGrade/',
           // url: url_base+'/models/loadStudentTable/',
-          data: { ccode: ccode },
+          data: { ylevel: ylevel },
           success: function(data) {
             var obj = JSON.parse(data);
             for(var j = 0; j < obj.length; j++) {
@@ -109,7 +109,10 @@ function getListOfStudents() {
                         viewType: v.val()
                       },
                       success: function(data) {
-                        var table = $("#attendanceSheet");
+                        var modalInfoContent = $(".modalInfoContent");
+                        var table = modalInfoContent.find("table#attendanceSheet");
+                        console.log(table)
+                        // var table = $("#attendanceSheet");
                         obj = JSON.parse(data)
                         for(var i = 0; i < obj.length; i++) {
                           var sDate = obj[i]["time"].split(" ")[0]

@@ -1,6 +1,7 @@
 <?php
 $config = array();
 $config['page_title'] = 'Attendance Monitoring';
+$config['page_title'] = 'Attendance Monitoring';
 
 $config['debug'] = true;
 $config['theme'] = 'default';
@@ -24,15 +25,7 @@ $config['database'] = array(
   'host' => 'localhost',
   'username' => 'kiosk',
   'password' => 'kiosk',
-  'database' => 'preschool_gatekeeper'
-);
-
-$config['filesWithoutHeader'] = array(
-  "studentInfo.php",
-  "loadStudentTable.php",
-  "arduino_1sms.php",
-  "arduino_app.php",
-  "arduino_gatecheck.php",
+  'database' => 'proj_gatekeeper'
 );
 
 Core\Registry::set('config', $config); # Whats the purpose of this?

@@ -4,12 +4,12 @@ $content .= "<div class='page-content' style='width: 100%; height: calc(100% - 3
 
 $content .= "<div class='form-group reportsOptions' data-script='getListOfStudents'>";
   $content .= "<label for='gradeSelect'>Filter: </label>";
-  $gradeLevels = Core\db::query(array("SELECT ccode, cname FROM proj_course", array()));
+  $gradeLevels = Core\db::query(array("SELECT ylevel FROM proj_yearlevel", array()));
   $content .= "<select id='gradeSelect' class='form-control'  style='width: auto;'>";
-    // $content .= "<option selected='selected' value=''>Filter by Grade</option>";
-    $content .= "<option selected='selected' value='G11-HAS'>Grade 11 HAS</option>";
+    $content .= "<option selected='selected' value=''>Filter by Grade</option>";
+    // $content .= "<option selected='selected' value='G11-HAS'>Grade 11 HAS</option>";
     foreach($gradeLevels as $g) {
-      $content .= "<option value='".$g["ccode"]."'>".$g["cname"]."</option>";
+      $content .= "<option value='".$g["ylevel"]."'>".$g["ylevel"]."</option>";
     }
   $content .= "</select>";
   // $content .= "</div>";
