@@ -1,4 +1,5 @@
 <?php
+namespace Core;
 
 class Router {
 
@@ -30,13 +31,13 @@ class Router {
   }
 }
 
-$bootstrapFile = dirname(__FILE__) . DIRECTORY_SEPARATOR . "bootstrap.php";
+$basedir = dirname(__FILE__);
+$bootstrapFile = $basedir . DIRECTORY_SEPARATOR . "bootstrap.php";
 if(is_file($bootstrapFile) && file_exists($bootstrapFile)) {
   include_once($bootstrapFile);
   Router::init($_SERVER);
-  Router::addRoute('/admin', function() { include("./views/admin.php"); });
-  Router::addRoute('/home', function() { include("./views/home.php"); });
-  Router::addRoute('/home/test', function() { include("./views/home/test.php"); });
-  Router::addRoute('', function() { include("./views/home.php"); });
+  Router::addRoute('', function() { Pages::getContents(dirname(__FILE__) . "/views/home.php", True); });
+  Router::addRoute('/home', function() { Pages::getContents(dirname(__FILE__) . "/views/home.php", True); });
+  Router::addRoute('/admin', function() { Pages::getContents(dirname(__FILE__) . "/views/admin.php", True); });
   Router::run();
 }
