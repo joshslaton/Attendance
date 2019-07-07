@@ -3,6 +3,7 @@
 $currentDir = dirname(__FILE__);
 $dirs = array();
 
+
 $dirs[] = $currentDir . DIRECTORY_SEPARATOR . "controllers";
 $dirs[] = $currentDir . DIRECTORY_SEPARATOR . "models";
 
