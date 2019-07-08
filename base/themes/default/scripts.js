@@ -52,11 +52,7 @@ function printAssesment(){
           },
           success: function(data) {
             // console.log(inputIDNumber.val())
-            var iframeid = "assessmentPDF"
-            var iframe = "<iframe id=\"assessmentPDF\" name=\"assessmentPDF\" src=\""+data.file+"\"></iframe>"
-            $("body").append(iframe)
-            $("#assessmentPDF").css("visibility", "hidden")
-            PrintElem(iframeid)
+            PrintElem(data.file)
           }
         })
       }
@@ -64,12 +60,14 @@ function printAssesment(){
   })
 }
 
-function PrintElem(iframeid){
-	var PDF = document.getElementById(iframeid)
-  // console.log(PDF)
-  // PDF.focus();
-  PDF.contentWindow.print()
-
+// Download the file temporarily
+// access it locally and print
+function PrintElem(link){
+  win = window.open(link, "PRINT", "width=800,height=600");
+  win.focus()
+  setTimeout( function() {
+    win.print()
+  }, 2000)
 }
 // function PrintElem(file){
 // 	console.log(file)
