@@ -2,6 +2,11 @@
   display: block;
 }
 
+.page-wrapper {
+  background-image: linear-gradient(-45deg, rgba(255, 255, 255, 1), rgb(128,128,128));
+  width: 100%;
+  height: 100%;
+}
 .primaryField {
   width: 200px;
   white-space: nowrap;
@@ -10,4 +15,18 @@
 .primaryField > *{
   display: inline-block;
   margin: 10px;
+}
+
+/* CARD */
+.card {
+  background-image: linear-gradient(45deg, rgb(226, 115, 7), rgb(248, 190, 20));
+  width: 250px;
+  height: 440px;
+  border-radius: 30px;
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 2rem;
+  color: white;
 }

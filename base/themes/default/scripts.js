@@ -30,14 +30,13 @@ function printAssesment(){
   var printbtn = $("input[Value=\"Print\"]")
   var inputIDNumber = $("input#inputIDNumber")
   var pk = "n5YBGMtJjT4JHlt7"
-  var page = ""
 
   printbtn.on("click", function(e){
     e.preventDefault();
-
+    var link = ""
     $.ajax({
       type: "post",
-      url: "https://kiosk.lorma.edu/Modules/requests",
+      url: "http://localhost/Modules/requests",
       data: { idnumber: inputIDNumber.val() },
       success: function(k) {
         $.ajax({
@@ -51,8 +50,28 @@ function printAssesment(){
             sec: k
           },
           success: function(data) {
-            // console.log(inputIDNumber.val())
-            PrintElem(data.file)
+            link = data.file
+          },
+          complete: function() {
+            $.ajax({
+              type: "post",
+              url: "http://localhost/Modules/requests",
+              data: {
+                requestType: "print",
+                link: link
+              },
+              success: function(data) {
+                console.log(data)
+                // var win = window.open("data:application/pdf," + escape(data));
+                // win.focus()
+                // win.print()
+                // setTimeout( function() {
+                //   win.close()
+                // }, 3000);
+              },
+              complete: function() {
+              }
+            })
           }
         })
       }

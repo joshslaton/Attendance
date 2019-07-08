@@ -39,3 +39,11 @@ $html .= "<label for=\"inputIDNumber\">Student ID:</label>";
 $html .= "</div>";
 
 echo $html;
+
+// $pdfFile = "https://lcaccess.lorma.edu/files/2019/07/08/Assess-1700066s19070808pm.pdf";
+// $data = file_get_contents($pdfFile);
+// header("Content-type: application/pdf");
+// header("Content-disposition: attachment;filename=temp.pdf");
+// echo $data;
+
+// https://lcaccess.lorma.edu/files/2019/07/08/Assess-1700066s19070808pm.pdf
