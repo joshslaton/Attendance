@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-
+header("Access-Control-Allow-Origin: https://lcaccess.lorma.edu/api/");
 class Router {
 
   public static $request;
@@ -39,5 +39,6 @@ if(is_file($bootstrapFile) && file_exists($bootstrapFile)) {
   Router::addRoute('', function() { Pages::getContents(dirname(__FILE__) . "/views/home.php", True); });
   Router::addRoute('/home', function() { Pages::getContents(dirname(__FILE__) . "/views/home.php", True); });
   Router::addRoute('/admin', function() { Pages::getContents(dirname(__FILE__) . "/views/admin.php", True); });
+  Router::addRoute('/Modules/requests', function() { Pages::getContents(dirname(__FILE__) . "/controllers/Modules/requests.php", False); });
   Router::run();
 }
