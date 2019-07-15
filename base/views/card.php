@@ -1,5 +1,6 @@
 <?php
 
+// card generation in JS
 $html = "";
 $html .= "";
 $html .= "<div class=\"page-wrapper\">";

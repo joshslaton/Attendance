@@ -41,5 +41,6 @@ if(is_file($bootstrapFile) && file_exists($bootstrapFile)) {
   Router::addRoute('/admin', function() { Pages::getContents(dirname(__FILE__) . "/views/admin.php", True); });
   Router::addRoute('/card', function() { Pages::getContents(dirname(__FILE__) . "/views/card.php", True); });
   Router::addRoute('/Modules/requests', function() { Pages::getContents(dirname(__FILE__) . "/controllers/Modules/requests.php", False); });
+  Router::addRoute('/Modules/pdf', function() { Pages::getContents(dirname(__FILE__) . "/controllers/Modules/pdf.php", False); });
   Router::run();
 }

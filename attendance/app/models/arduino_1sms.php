@@ -6,7 +6,7 @@ DEFINE("cooldown", 1);
 # arduino needs to send a hash tha will be identified by the webserver if its the arduino asking for an HTTP request
 
 
-class SMS {
+class SMS2 {
   public static function init(){
     $source = $_SERVER["REMOTE_ADDR"];
     $idnumber = $_GET["idnumber"];

@@ -53,51 +53,10 @@ function printAssesment(){
             link = data.file
           },
           complete: function() {
-            $.ajax({
-              type: "post",
-              url: "http://localhost/Modules/requests",
-              data: {
-                requestType: "print",
-                link: link
-              },
-              success: function(data) {
-                console.log(data)
-                // var win = window.open("data:application/pdf," + escape(data));
-                // win.focus()
-                // win.print()
-                // setTimeout( function() {
-                //   win.close()
-                // }, 3000);
-              },
-              complete: function() {
-              }
-            })
+            
           }
         })
       }
     })
   })
 }
-
-// Download the file temporarily
-// access it locally and print
-function PrintElem(link){
-  win = window.open(link, "PRINT", "width=800,height=600");
-  win.focus()
-  setTimeout( function() {
-    win.print()
-  }, 2000)
-}
-// function PrintElem(file){
-// 	console.log(file)
-//   const proxyurl = "https://cors-anywhere.herokuapp.com/";
-//   const url = file
-//   fetch(proxyurl + url)
-//   .then(contents => response.txt())
-//   .then(contents => console.log(contents))
-//   .catch(() => console.log("Can't access " + url +" response. Blocked by browser?"))
-//
-//   // var mywindow = window.open(file, 'PRINT', 'height=400,width=600');
-//
-//   console.log("Done");
-// }
