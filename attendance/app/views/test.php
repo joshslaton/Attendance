@@ -1,2 +1,2 @@
 <?php
-Core\SMS3::init();
+Core\SMS3::record();

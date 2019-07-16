@@ -15,6 +15,7 @@ class Router {
   }
 
   public static function addRoute(string $uri, \Closure $fn) : void {
+    // AttendanceModules/
     self::$routes[$uri] = $fn;
   }
 
@@ -36,11 +37,39 @@ $bootstrapFile = $basedir . DIRECTORY_SEPARATOR . "bootstrap.php";
 if(is_file($bootstrapFile) && file_exists($bootstrapFile)) {
   include_once($bootstrapFile);
   Router::init($_SERVER);
-  Router::addRoute('', function() { Pages::getContents(dirname(__FILE__) . "/views/home.php", True); });
-  Router::addRoute('/home', function() { Pages::getContents(dirname(__FILE__) . "/views/home.php", True); });
-  Router::addRoute('/admin', function() { Pages::getContents(dirname(__FILE__) . "/views/admin.php", True); });
-  Router::addRoute('/card', function() { Pages::getContents(dirname(__FILE__) . "/views/card.php", True); });
-  Router::addRoute('/Modules/requests', function() { Pages::getContents(dirname(__FILE__) . "/controllers/Modules/requests.php", False); });
-  Router::addRoute('/Modules/pdf', function() { Pages::getContents(dirname(__FILE__) . "/controllers/Modules/pdf.php", False); });
+
+  // --------------------------------MAIN PAGE------------------------------- //
+  // var_dump(dirname(__FILE__) . "/views/reports.php");
+  Router::addRoute(
+    '',
+    function() { Pages::getContents(dirname(__FILE__) . "/views/home.php", True); }
+  );
+  Router::addRoute(
+    '/home/',
+    function() { Pages::getContents(dirname(__FILE__) . "/views/home.php", True); }
+  );
+  Router::addRoute(
+    '/reports/',
+    function() { Pages::getContents(dirname(__FILE__) . "/views/reports.php", True); }
+  );
+
+
+  // ----------------------------------MODULES------------------------------- //
+  Router::addRoute(
+    '/Modules/Student/AttendanceSheet/',
+    function() {
+      Pages::getContents(dirname(__FILE__) .
+      "/controllers/Modules/Student/AttendanceSheet.php", False);
+    }
+  );
+  Router::addRoute(
+    '/Modules/Student/ListAllStudents/',
+    function() { Pages::getContents(dirname(__FILE__) .
+      "/controllers/Modules/Student/ListAllStudents.php", False);
+    }
+  );
+
+
+  // ----------------------------------RUN----------------------------------- //
   Router::run();
 }

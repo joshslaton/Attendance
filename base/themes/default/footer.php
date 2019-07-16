@@ -1,6 +1,8 @@
 <?php
+// $html = '</div>'; // end of page-content div
+$html = '</div>'; // End of page-wrapper div
+$html .= '</body>';
+$html .= '</html>';
 
-$footer = "</body>";
-$footer = "</html>";
-
-echo $footer;
+echo $html;
+?>

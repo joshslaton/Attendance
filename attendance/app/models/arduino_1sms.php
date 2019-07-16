@@ -7,7 +7,7 @@ DEFINE("cooldown", 1);
 
 
 class SMS2 {
-  public static function init(){
+  public static function record(){
     $source = $_SERVER["REMOTE_ADDR"];
     $idnumber = $_GET["idnumber"];
     // var_dump($source, $idnumber);
