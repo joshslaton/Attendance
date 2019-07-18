@@ -107,9 +107,8 @@ function getListOfStudents() {
                         viewType: v.val()
                       },
                       success: function(data) {
-                        var modalInfoContent = $(".modalInfoContent");
+                        var modalInfoContent = $("#modalInfoContent");
                         var table = modalInfoContent.find("table#attendanceSheet");
-                        console.log(table)
                         // var table = $("#attendanceSheet");
                         obj = JSON.parse(data)
                         for(var i = 0; i < obj.length; i++) {
@@ -232,9 +231,11 @@ function modalContainer(e) {
               "<div class='modalInfoTitle'>Attendance Information</div>" +
               "<input class='btn btn-primary modalClose' type='button' value='Close'>" +
               "<input class='btn btn-success modalPrint' type='button' value='Print'>" +
+              "<input class='btn btn-success modalPDF' type='button' value='PDF'>" +
               "</div>" +
 
-              "<div class='modalInfoContent'>" +
+              "<div id='modalInfoContent'>" +
+              "<div id='handler'></div>" +
               e +
               "</div>" +
 
@@ -246,10 +247,10 @@ function modalContainer(e) {
   $("body").append(c);
   $(".modalContainer").css("display", "block");
 
+  toPDF();
   printModalContents();
   closeModalContainer();
 }
-
 function printModalContents() {
   var s = $(".modalPrint");
   s.click( function() {
@@ -321,6 +322,31 @@ function printModalContents() {
   })
 }
 
+function toPDF() {
+  // var source = $(".modalInfoContent").html();
+  var s = $(".modalPDF");
+
+  s.on("click", function() {
+    var doc = new jsPDF();
+
+    res = doc.autoTableHtmlToJson(document.getElementById("attendanceSheet"))
+    console.log(res)
+    // res = doc.autoTableHtmlToJson({
+    //   html: "#attendanceSheet",
+    //   styles: {
+    //     width: "100%"
+    //   },
+    // })
+    // var string = doc.output('datauristring');
+    // var iframe = "<iframe width='100%' height='100%' src='" + string + "'></iframe>"
+    // var x = window.open();
+    // x.document.open();
+    // x.document.write(iframe);
+    // x.document.close();
+  });
+}
+
+
 function closeModalContainer() {
   var s = $(".modalClose");
   s.click( function() {
@@ -358,30 +384,6 @@ function  attendanceTable(time_records) {
 
 }
 
-function fillAttendance() {
-  var idnumber = "3800007";
-  var pc = $(".page-content");
-
-  $.ajax({
-    type: 'post',
-    url: url_base+'views/studentInfo/',
-    data: { idnumber: idnumber, requestType: "requestAttendance" },
-    success: function(data) {
-      var obj = JSON.parse(data)
-      console.log(obj);
-      for(var i = 0; i < obj.length; i ++) {
-        var d = obj[i].time.split(" ")[0];
-        var t = obj[i].time.split(" ")[1];
-        pc.find("tr[rel='"+d+"']").css({
-        "background-color": "rgb(0, 255, 0, 0.2)"
-        })
-        pc.find("tr[rel='"+d+"']").children("td[rel='time']").html(t)
-        pc.find("tr[rel='"+d+"']").children("td[rel='remarks']").html("Any notes goes here")
-      }
-    }
-
-  })
-}
 
 function schoolYear() {
   var d = $(".schoolYear")
@@ -403,11 +405,10 @@ function schoolYear() {
   $(".setButton").on("click", function(e){
     $.ajax({
       type: "post",
-      url: url_base + "Requests/SchoolYear/set/",
+      url: "/Modules/SchoolYear/Set/",
       data: { term: t.val() },
       success: function(data) {
         location.reload()
-        console.log(data)
       }
     })
   })

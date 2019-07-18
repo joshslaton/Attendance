@@ -34,7 +34,6 @@ class Term {
         }
       }
     } else {
-      // exit();
     }
   }
 

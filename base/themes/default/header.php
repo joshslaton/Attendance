@@ -1,5 +1,4 @@
 <?php
-  session_start();
   Core\Term::set();
   // $title = Core\Registry::get('config/page_title');
   $html = "<html>";
@@ -9,11 +8,16 @@
   $html .= "<script src=\"".Core\Registry::get("config/url/base"). "plugins/bootstrap.min.js\" type=\"text/javascript\"></script>";
   $html .= "";
   $html .= "<link href=\"".Core\Registry::get("config/url/base"). "plugins/bootstrap.min.css\" rel=\"stylesheet\">";
+  $html .= "<script src=\"".Core\Registry::get("config/url/base"). "plugins/jspdf.debug.js\" type=\"text/javascript\"></script>";
+  // $html .= "<script src=\"".Core\Registry::get("config/url/base"). "plugins/jspdf.min.js\" type=\"text/javascript\"></script>";
+  $html .= "<script src=\"".Core\Registry::get("config/url/base"). "plugins/jspdf.plugin.autotable.js\" type=\"text/javascript\"></script>";
+
   $html .= "<script src=\"".Core\Registry::get("config/url/theme"). "scripts.js\"></script>";
   $html .= "<link href=\"".Core\Registry::get("config/url/theme"). "style.css\" rel=\"stylesheet\">";
   $html .= "</head>";
   $html .= "<body>";
   $html .= "<div class=\"page-wrapper\">";
+  // $html .= print_r($_SESSION);
 
   echo $html;
 

@@ -1,6 +1,6 @@
 <?php
 namespace Core;
-header("Access-Control-Allow-Origin: https://lcaccess.lorma.edu/api/");
+session_start();
 class Router {
 
   public static $request;
@@ -31,7 +31,6 @@ class Router {
     }
   }
 }
-
 $basedir = dirname(__FILE__);
 $bootstrapFile = $basedir . DIRECTORY_SEPARATOR . "bootstrap.php";
 if(is_file($bootstrapFile) && file_exists($bootstrapFile)) {
@@ -66,6 +65,13 @@ if(is_file($bootstrapFile) && file_exists($bootstrapFile)) {
     '/Modules/Student/ListAllStudents/',
     function() { Pages::getContents(dirname(__FILE__) .
       "/controllers/Modules/Student/ListAllStudents.php", False);
+    }
+  );
+
+  Router::addRoute(
+    '/Modules/SchoolYear/Set/',
+    function() { Pages::getContents(dirname(__FILE__) .
+      "/controllers/Modules/SchoolYear/Set.php", False);
     }
   );
 
