@@ -75,6 +75,13 @@ if(is_file($bootstrapFile) && file_exists($bootstrapFile)) {
     }
   );
 
+  Router::addRoute(
+    '/Modules/SMS/',
+    function() { Pages::getContents(dirname(__FILE__) .
+      "/controllers/Modules/SMS.php", False);
+    }
+  );
+
 
   // ----------------------------------RUN----------------------------------- //
   Router::run();
