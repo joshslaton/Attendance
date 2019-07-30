@@ -221,6 +221,8 @@ table {
 
 .modalInfoContainer {
   background-color: rgb(255, 251, 163);
+  min-width: 1250px;
+  min-height: 800px;
   border-radius: 3px;
   margin: 30px;
 }
