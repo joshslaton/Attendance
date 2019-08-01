@@ -1,69 +1,97 @@
 <?php
-namespace Core;
 // include("/var/www/html/preschool/includes/DB.inc.php");
-DEFINE("isDebugMode",true);
-DEFINE("interval", 86400);
+DEFINE("isDebugMode",false);
+DEFINE("interval", 5); // 5 seconds
 # arduino needs to send a hash tha will be identified by the webserver if its the arduino asking for an HTTP request
 
 
 class SMS {
 
   public static function Sender() {
-    $query = "SELECT " .
+    $dateNow = new DateTime();
+    $start = $dateNow->format("Y-m-d");
+    $end = $dateNow->modify("+1 day")->format("Y-m-d");
+
+    $q1 = "SELECT " .
                 "proj_attendance.id, " .
                 "proj_attendance.idnumber, " .
+                "proj_attendance.isSent, " .
                 "proj_attendance.gate, " .
-                "CONCAT(
-                  proj_student.fname,
-                  \"\") AS name, " .
+                "proj_student.fname AS name, " .
                 "proj_attendance.time, " .
                 "proj_student.contact " .
               "FROM proj_student " .
               "LEFT JOIN proj_attendance " .
               "ON proj_student.idnumber = proj_attendance.idnumber " .
-              "WHERE isSent = 0";
+              "WHERE time >= \"$start 00:00:00\" AND time < \"$end 00:00:00\"";
 
-    $results = db::query(array($query, array()));
 
-    if(!empty($results)) {
-      foreach($results as $result) {
+      $records = Core\db::query(array($q1, array()));
 
-        switch($result["gate"]) {
-          case "in": $gate = "entrance"; break;
-          case "out": $gate = "exit"; break;
-          default: $gate = "teszt"; break;
-        }
-
-        if($contacts = explode(",", $result["contact"])) {
-          // If there are one or more valid numbers
-          if(count($contacts) > 1) {
-            foreach($contacts as $contact) {
-              if(SMS::isMobileNumber(SMS::cleanNumber($contact))) {
-                $contact = SMS::cleanNumber($contact);
-                $message = $result["name"]. " has passed the ". strtoupper($gate." gate") ." at ".$result["time"];
-                // echo "Length of message: " . strlen($message);
-                // echo "<br>";
-                SMS::sendSMS($contact,$message);
-              }
-            }
-          }
-
-          // If there is only one valid number
-          if(count($contacts) == 1) {
-            foreach($contacts as $contact) {
-              if(SMS::isMobileNumber(SMS::cleanNumber($contact))) {
-                $contact = SMS::cleanNumber($contact);
-                $message = $result["name"]. " has passed the ". strtoupper($gate." gate") ." at ".$result["time"];
-                // echo "Length of message: " . strlen($message);
-                // echo "<br>";
-                SMS::sendSMS($contact,$message);
-              }
-            }
-          }
+      if(count($records) > 0) {
+        if($records[0]["isSent"] == 0) {
+          print_r($records[0]);
         }
       }
-    }
+
+
   }
+  // public static function Sender() {
+  //   $query = "SELECT " .
+  //               "proj_attendance.id, " .
+  //               "proj_attendance.idnumber, " .
+  //               "proj_attendance.gate, " .
+  //               "CONCAT(
+  //                 proj_student.fname,
+  //                 \"\") AS name, " .
+  //               "proj_attendance.time, " .
+  //               "proj_student.contact " .
+  //             "FROM proj_student " .
+  //             "LEFT JOIN proj_attendance " .
+  //             "ON proj_student.idnumber = proj_attendance.idnumber " .
+  //             "WHERE isSent = 0";
+  //
+  //   $results = Core\db::query(array($query, array()));
+  //
+  //   if(!empty($results)) {
+  //     foreach($results as $result) {
+  //
+  //       switch($result["gate"]) {
+  //         case "in": $gate = "entrance"; break;
+  //         case "out": $gate = "exit"; break;
+  //         default: $gate = "teszt"; break;
+  //       }
+  //
+  //       if($contacts = explode(",", $result["contact"])) {
+  //         // If there are one or more valid numbers
+  //         if(count($contacts) > 1) {
+  //           foreach($contacts as $contact) {
+  //             if(SMS::isMobileNumber(SMS::cleanNumber($contact))) {
+  //               $contact = SMS::cleanNumber($contact);
+  //               $message = $result["name"]. " has passed the ". strtoupper($gate." gate") ." at ".$result["time"];
+  //               // echo "Length of message: " . strlen($message);
+  //               // echo "<br>";
+  //               SMS::sendSMS($contact,$message);
+  //             }
+  //           }
+  //         }
+  //
+  //         // If there is only one valid number
+  //         if(count($contacts) == 1) {
+  //           foreach($contacts as $contact) {
+  //             if(SMS::isMobileNumber(SMS::cleanNumber($contact))) {
+  //               $contact = SMS::cleanNumber($contact);
+  //               $message = $result["name"]. " has passed the ". strtoupper($gate." gate") ." at ".$result["time"];
+  //               // echo "Length of message: " . strlen($message);
+  //               // echo "<br>";
+  //               SMS::sendSMS($contact,$message);
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   // Record as much but only send one, the most early time recorded among
   // Data privacy ReflectionFunctionAbstract
@@ -74,46 +102,112 @@ class SMS {
   // id number, mobile numbers, purpose
   // purpose of system
   // end of validity
-  // if(db::query(array($query, array($idnumber, $d, $dateNow->format("Y-m-d H:i:s"), $dateNow->format("Y"))))) {
+  // if(Core\db::query(array($query, array($idnumber, $d, $dateNow->format("Y-m-d H:i:s"), $dateNow->format("Y"))))) {
   //   echo "Insert success!";
   // }
-  250525923
+
   public static function Record(){
     $idnumber = $_GET["idnumber"];
-    $d = $_GET["dir"];
-    $dateNow = new \DateTime();
+    $direction = $_GET["dir"];
+
+    $d = new DateTime();
+    $dateNow = new DateTime();
+
+    $start = $dateNow->format("Y-m-d");
+    $end = $dateNow->modify("+1 day")->format("Y-m-d");
+
+    /*
+     *  To check if the length of number being sent is 7
+     */
     if(!is_null($idnumber) && strlen($idnumber) == 7){
         if(self::studentExists($idnumber)){
-          // IN
-          if($d == "in"){
-            $timeRecords = db::query(array("SELECT time FROM proj_attendance WHERE idnumber = ?", array($idnumber)));
-            $prev
-            if(count($timeRecords) > 0) {
-              // Is the record, from today?
-              foreach($timeRecords as $timeRecord) {
-                echo $timeRecord["time"];
-                echo "<br>";
+          if($direction == "in") {
+            $records = Core\db::query(array("SELECT gate, time FROM proj_attendance WHERE idnumber = ? and time >= \"$start 00:00:00\" AND time < \"$end\"", array($idnumber)));
+
+            if(count($records) > 0) {
+              /*
+               *  Is the last record in the database for the student, an OUT?
+               */
+              $last = $records[count($records)-1];
+              if($last["gate"] == "out") {
+                /* INSERT an IN record IF:
+                 * 1) Previous record is an OUT
+                 * 2) Previous record is a time in the past,
+                 */
+                error_log("[**SMS_GATEWAY**] - $idnumber Previous record is an OUT. Insert an IN record.");
+                if(strtotime($last["time"]) < strtotime($dateNow->format("Y-m-d"))) {
+                  Core\db::query(
+                          array("INSERT INTO proj_attendance(idnumber, gate, time, syear) VALUES (?, ?, ?, ?)",
+                          array($idnumber, $direction, $d->format("Y-m-d H:i:s"), $d->format("Y"))));
+                }
+              } else {
+                error_log("[**SMS_GATEWAY**] - $idnumber inserting failed. Previous record is not an OUT");
+              }
+            } else {
+              /*
+               *  There is no IN record for today. We insert
+               */
+              $command = Core\db::query(
+                      array("INSERT INTO proj_attendance(idnumber, gate, time, syear) VALUES (?, ?, ?, ?)",
+                      array($idnumber, $direction, $d->format("Y-m-d H:i:s"), $d->format("Y"))));
+              if($command){
+                error_log("[**SMS_GATEWAY**] - $idnumber has no IN record for today. INSERT!");
               }
             }
-
           }
 
-          // OUT
-          if($d == "out"){
-            $timeRecord = db::query(array("SELECT * FROM proj_attendance WHERE idnumber = ?", array($idnumber)));
-          }
+          if($direction == "out") {
+            $records = Core\db::query(array("SELECT gate, time FROM proj_attendance WHERE idnumber = ? and time >= \"$start 00:00:00\" AND time < \"$end\"", array($idnumber)));
 
+            /*
+             * INSERT an OUT record IF:
+             * 1) There is no OUT record. Because its possible for a student to
+             *    pass through the OUT gate without passing through the IN gate.
+             *    e.g (students going in through cars)
+             *
+             * 2) Previous record is an IN record and its a time in the past.
+             */
+            if(count($records) > 0) {
+
+              /*
+               *  Is the last record in the database for the student, an IN?
+               */
+              $last = $records[count($records)-1];
+              if($last["gate"] == "in") {
+                // INSERT if the last record, is a time in the past.
+                error_log("[**SMS_GATEWAY**] - $idnumber Previous record is an IN. Insert.");
+                if(strtotime($last["time"]) < strtotime($dateNow->format("Y-m-d"))) {
+                  Core\db::query(
+                          array("INSERT INTO proj_attendance(idnumber, gate, time, syear) VALUES (?, ?, ?, ?)",
+                          array($idnumber, $direction, $d->format("Y-m-d H:i:s"), $d->format("Y"))));
+                }
+              } else {
+                error_log("[**SMS_GATEWAY**] - $idnumber inserting failed. Previous record is an OUT");
+              }
+            } else {
+              /*
+               * Its possible that a student didn't pass the entry gate
+               * but will pass the exit gate, we record any way.
+               */
+              $command = Core\db::query(
+                      array("INSERT INTO proj_attendance(idnumber, gate, time, syear) VALUES (?, ?, ?, ?)",
+                      array($idnumber, $direction, $d->format("Y-m-d H:i:s"), $d->format("Y"))));
+              if($command) {
+                error_log("[**SMS_GATEWAY**] - $idnumber has no OUT record. INSERT.");
+              }
+            }
+          }
         }
       }
   }
 
   private static function studentExists($idnumber){
-    $studentRecord = db::query(array("SELECT * from proj_student WHERE idnumber = ?", array($idnumber)));
+    $studentRecord = Core\db::query(array("SELECT * from proj_student WHERE idnumber = ?", array($idnumber)));
     return (count($studentRecord) == 1) ? $studentRecord[0] : array();
   }
 
 
-  // every 5 seconds 10 message
+  // TODO: every 5 seconds 10 message
   static function sendSMS($number,$message,$params=array()){
         $number = self::cleanNumber($number);
         $curl = curl_init();
@@ -128,23 +222,6 @@ class SMS {
         );
         print_r($data);
         echo "<br>";
-        // $curlopt = array(
-        //     CURLOPT_URL => 'https://lcaccess2.lorma.edu/sms/',
-        //     CURLOPT_RETURNTRANSFER => true,
-        //     CURLOPT_ENCODING => "",
-        //     CURLOPT_MAXREDIRS => 10,
-        //     CURLOPT_TIMEOUT => 30,
-        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        //     CURLOPT_CUSTOMREQUEST => "POST",
-        //     CURLOPT_POSTFIELDS =>
-        //     (http_build_query($data)),
-        //     CURLOPT_HTTPHEADER => array(
-        //         "Content-Type: application/x-www-form-urlencoded",
-        //         "cache-control: no-cache"
-        //     ),
-        //     #CURLOPT_SSL_VERIFYHOST => false,
-        //     #CURLOPT_SSL_VERIFYPEER => false,
-        // );
         $curlopt = array(
     			CURLOPT_URL => "https://lcaccess2.lorma.edu/sms/",
     			CURLOPT_POST => true,
