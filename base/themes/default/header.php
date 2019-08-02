@@ -35,9 +35,9 @@
       $menu .= '</div>';
     $menu .= '</div>';
 
-    $menu .= "<div class=\"dropdown\">";
-    $menu .= "<span>Logout</span>";
-    $menu .= "</div>";
+    // $menu .= "<div class=\"dropdown\">";
+    // $menu .= "<span>Logout</span>";
+    // $menu .= "</div>";
 
     $menu .= "<div class='schoolYear' data-script='schoolYear'>";
 

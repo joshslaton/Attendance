@@ -36,75 +36,7 @@ class SMS {
 
 
   }
-  // public static function Sender() {
-  //   $query = "SELECT " .
-  //               "proj_attendance.id, " .
-  //               "proj_attendance.idnumber, " .
-  //               "proj_attendance.gate, " .
-  //               "CONCAT(
-  //                 proj_student.fname,
-  //                 \"\") AS name, " .
-  //               "proj_attendance.time, " .
-  //               "proj_student.contact " .
-  //             "FROM proj_student " .
-  //             "LEFT JOIN proj_attendance " .
-  //             "ON proj_student.idnumber = proj_attendance.idnumber " .
-  //             "WHERE isSent = 0";
-  //
-  //   $results = Core\db::query(array($query, array()));
-  //
-  //   if(!empty($results)) {
-  //     foreach($results as $result) {
-  //
-  //       switch($result["gate"]) {
-  //         case "in": $gate = "entrance"; break;
-  //         case "out": $gate = "exit"; break;
-  //         default: $gate = "teszt"; break;
-  //       }
-  //
-  //       if($contacts = explode(",", $result["contact"])) {
-  //         // If there are one or more valid numbers
-  //         if(count($contacts) > 1) {
-  //           foreach($contacts as $contact) {
-  //             if(SMS::isMobileNumber(SMS::cleanNumber($contact))) {
-  //               $contact = SMS::cleanNumber($contact);
-  //               $message = $result["name"]. " has passed the ". strtoupper($gate." gate") ." at ".$result["time"];
-  //               // echo "Length of message: " . strlen($message);
-  //               // echo "<br>";
-  //               SMS::sendSMS($contact,$message);
-  //             }
-  //           }
-  //         }
-  //
-  //         // If there is only one valid number
-  //         if(count($contacts) == 1) {
-  //           foreach($contacts as $contact) {
-  //             if(SMS::isMobileNumber(SMS::cleanNumber($contact))) {
-  //               $contact = SMS::cleanNumber($contact);
-  //               $message = $result["name"]. " has passed the ". strtoupper($gate." gate") ." at ".$result["time"];
-  //               // echo "Length of message: " . strlen($message);
-  //               // echo "<br>";
-  //               SMS::sendSMS($contact,$message);
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
 
-  // Record as much but only send one, the most early time recorded among
-  // Data privacy ReflectionFunctionAbstract
-  // what do you collect
-  // what do you do to the data
-  // disposal of data
-  // what do you do when if theres a problem
-  // id number, mobile numbers, purpose
-  // purpose of system
-  // end of validity
-  // if(Core\db::query(array($query, array($idnumber, $d, $dateNow->format("Y-m-d H:i:s"), $dateNow->format("Y"))))) {
-  //   echo "Insert success!";
-  // }
 
   public static function Record(){
     $idnumber = $_GET["idnumber"];
@@ -120,7 +52,7 @@ class SMS {
      *  To check if the length of number being sent is 7
      */
     if(!is_null($idnumber) && strlen($idnumber) == 7){
-        if(self::studentExists($idnumber)){
+        if(self::studentExists($idnumber)){ // <---- ACCESS
           if($direction == "in") {
             $records = Core\db::query(array("SELECT gate, time FROM proj_attendance WHERE idnumber = ? and time >= \"$start 00:00:00\" AND time < \"$end\"", array($idnumber)));
 

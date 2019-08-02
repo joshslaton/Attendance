@@ -69,7 +69,7 @@ if ($_POST["action"] != null) {
                   $tbl .= "<table id='attendanceSheet'>";
                   $year = $duration["start"]->format("Y");
                   // Year
-                  $tbl .= "<tr><th id='attendanceYearLabel'>".$term." - ".$_SESSION["term"]."</th></tr>";
+                  $tbl .= "<tr><th id='attendanceYearLabel' colspan=6>".$term." - ".$_SESSION["term"]."</th></tr>";
                   // Month
                   $tbl .= "<tr>";
                   // 6 - 7

@@ -168,16 +168,13 @@ table {
 }
 
 /* ----- reports.php----- */
-.accordion {
-  color: black;
-  cursor: pointer;
-  margin-bottom: 10px;
-  padding: 13px;
-  width: 100%;
-  text-align: center;
-  border: none;
-  outline: none;
-  transition: 0.4s;
+#title {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+#search {
+    margin-top: 5px;
 }
 
 .panel {

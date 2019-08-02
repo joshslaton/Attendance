@@ -3,6 +3,8 @@ $content = "";
 $content .= "<div class='page-content' style='width: 100%; height: calc(100% - 34px); padding: 10px;'>";
 
 $content .= "<div class='form-group reportsOptions' data-script='getListOfStudents'>";
+  $content .= "<p id=\"title\">Search by Grade</p>";
+  $content .= "<br>";
   $content .= "<label for='gradeSelect'>Filter: </label>";
   $gradeLevels = Core\db::query(array("SELECT ylevel FROM proj_yearlevel", array()));
   $content .= "<select id='gradeSelect' class='form-control'  style='width: auto;'>";
@@ -22,6 +24,12 @@ $content .= "<div class='form-group reportsOptions' data-script='getListOfStuden
       $content .= "<option value='Classcard'>Classcard</option>";
       $content .= "<option selected='selected' value='DTR'>DTR</option>";
   $content .= "</select>";
+  $content .= "<br><br>";
+  $content .= "<p id=\"title\">Search by Name or ID Number (Note: This ignores \"Search by Grade\")</p>";
+  $content .= "<br>";
+  $content .= "<label for='viewSelect'>Search: </label>";
+  $content .= "<input type='text' id=\"searchByName\" class=\"form-control\" style='width: auto;'>";
+  $content .= "<br>";
   $content .= "<input type='button' id='search' class='btn btn-primary' value='Search'>";
 $content .= "</div>";
 
