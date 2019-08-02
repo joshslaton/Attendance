@@ -64,16 +64,17 @@ function getListOfStudents() {
             for(var j = 0; j < obj.length; j++) {
               var id = obj[j].idnumber
               var n = obj[j].sname
-              t.find("tbody").append("<tr data-idnumber='"+id+"'><td>"+id+"</td><td>"+n+"</td><td><a href='#View'>View</a> | <a href='#Edit'>Edit</a> | <a href='#Print'>Print</a></td></tr>")
+              t.find("tbody").append("<tr data-idnumber=\"+id+\" data-name=\""+n+"\"><td>"+id+"</td><td>"+n+"</td><td><a href=\"#View\">View</a> | <a href=\"#Edit\">Edit</a> | <a href=\"#Print\">Print</a></td></tr>")
             }
 
             var table = $("#studentTable");
             var a = table.children("tbody")
             var b = a.children("tr")
             var c = b.children("td:last-child")
-            c.find("a[href='#View']").click( function(e){
+            c.find("a[href=\"#View\"]").click( function(e){
               e.preventDefault();
               id = $(this).closest("tr").data("idnumber")
+              name = $(this).closest("tr").data("name")
               // Checks if "11" or "12" in select
               var isKto12 = 0;
 
@@ -95,7 +96,7 @@ function getListOfStudents() {
                   Kto12: isKto12
                 },
                 success: function(e) {
-                  modalContainer(e, id);
+                  modalContainer(e, name);
 
                   // Fill student table with attendance
                   if( v.val() == "DTR"){
@@ -185,14 +186,14 @@ function getListOfStudents() {
             if(obj.length == 1) {
                 var id = obj[0].idnumber;
                 var n = obj[0].sname;
-                t.find("tbody").append("<tr data-idnumber='"+id+"'><td>"+id+"</td><td>"+n+"</td><td><a href='#View'>View</a> | <a href='#Edit'>Edit</a> | <a href='#Print'>Print</a></td></tr>");
+                t.find("tbody").append("<tr data-idnumber=\""+id+"\" data-name=\""+n+"\"><td>"+id+"</td><td>"+n+"</td><td><a href=\"#View\">View</a> | <a href=\"#Edit\">Edit</a> | <a href=\"#Print\">Print</a></td></tr>")
               }
 
             if(obj.length > 1) {
               for(var i=0; i<obj.length; i++) {
                 var id = obj[i].idnumber;
                 var n = obj[i].sname;
-                t.find("tbody").append("<tr data-idnumber='"+id+"'><td>"+id+"</td><td>"+n+"</td><td><a href='#View'>View</a> | <a href='#Edit'>Edit</a> | <a href='#Print'>Print</a></td></tr>");
+                t.find("tbody").append("<tr data-idnumber=\""+id+"\" data-name=\""+n+"\"><td>"+id+"</td><td>"+n+"</td><td><a href=\"#View\">View</a> | <a href=\"#Edit\">Edit</a> | <a href=\"#Print\">Print</a></td></tr>")
               }
             }
             var table = $("#studentTable");
@@ -202,6 +203,7 @@ function getListOfStudents() {
             c.find("a[href='#View']").click( function(e){
               e.preventDefault();
               id = $(this).closest("tr").data("idnumber")
+              name = $(this).closest("tr").data("name")
               // Checks if "11" or "12" in select
               var isKto12 = 0;
 
@@ -223,7 +225,7 @@ function getListOfStudents() {
                   Kto12: isKto12
                 },
                 success: function(e) {
-                  modalContainer(e, id);
+                  modalContainer(e, name);
 
                   // Fill student table with attendance
                   if( v.val() == "DTR"){
@@ -353,14 +355,14 @@ function loadStudentTable() {
   })
 }
 
-function modalContainer(e) {
+function modalContainer(e, name) {
   // console.log(e)
   // var student = JSON.parse(e);
   // var timeRecords = timeRecordsTable(student.time_records);
   var c = "<div class='modalContainer'>" +
             "<div class='modalInfoContainer'>" + // container start
               "<div class='modalInfoHeader'>" +
-              "<div class='modalInfoTitle'>Attendance Information</div>" +
+              "<div class='modalInfoTitle'>Attendance Information of " + name + "</div>" +
               "<input class='btn btn-primary modalClose' type='button' value='Close'>" +
               "<input class='btn btn-success modalPrint' type='button' value='Print'>" +
               "<input class='btn btn-success modalPDF' type='button' value='PDF'>" +

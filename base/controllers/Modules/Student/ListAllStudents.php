@@ -22,13 +22,13 @@ if(!is_null($_POST["searchByStudent"])) {
     // Fuzzy string search on MySQL using LIKE
     if(strlen($s) < 7) {
       $input = $s . "%";
-      $students = Core\db::query(array("SELECT idnumber, CONCAT(UPPER(lname), ', ', mname, ', ', fname) AS sname FROM proj_student WHERE idnumber LIKE ?", array($input)));
+      $students = Core\db::query(array("SELECT idnumber, CONCAT(UPPER(lname), ', ', mname, ', ', fname) AS sname FROM proj_student WHERE idnumber LIKE ? ORDER BY idnumber", array($input)));
       echo json_encode($students);
     }
 
     if(strlen($s) == 7) {
       $input = $s;
-      $students = Core\db::query(array("SELECT idnumber, CONCAT(UPPER(lname), ', ', mname, ', ', fname) AS sname FROM proj_student WHERE idnumber = ?", array($input)));
+      $students = Core\db::query(array("SELECT idnumber, CONCAT(UPPER(lname), ', ', mname, ', ', fname) AS sname FROM proj_student WHERE idnumber = ? ORDER BY idnumber", array($input)));
       echo json_encode($students);
     }
   }

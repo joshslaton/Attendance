@@ -1,13 +1,13 @@
 <?php
 // include("/var/www/html/preschool/includes/DB.inc.php");
 DEFINE("isDebugMode",false);
-DEFINE("interval", 5); // 5 seconds
 # arduino needs to send a hash tha will be identified by the webserver if its the arduino asking for an HTTP request
 
 
 class SMS {
 
   public static function Sender() {
+    $sendingInterval = 3600;
     $dateNow = new DateTime();
     $start = $dateNow->format("Y-m-d");
     $end = $dateNow->modify("+1 day")->format("Y-m-d");
@@ -26,19 +26,86 @@ class SMS {
               "WHERE time >= \"$start 00:00:00\" AND time < \"$end 00:00:00\"";
 
 
-      $records = Core\db::query(array($q1, array()));
+      $records = Core\db::query(array($q1));
 
+      // 1 hour interval
+      // foreach($records as $record) {
+      //   echo $record["time"]." - ".$record["isSent"];
+      //   echo "<br>";
+      // }
+      $toSend = array();
+      $temp = array();
+      // Evaluate each record
       if(count($records) > 0) {
-        if($records[0]["isSent"] == 0) {
-          print_r($records[0]);
+        array_push($temp, $records[0]);
+        foreach($records as $k=>$v) {
+          if($v["gate"] == "in") {
+
+          }
         }
       }
 
-
+      if(count($toSend) > 0) {
+        foreach($toSend as $tS) {
+          print_r($tS);
+          echo "<br>";
+        }
+      }
   }
 
-
   public static function Record(){
+    $interval = 10;
+    $idnumber = $_GET["idnumber"];
+    $direction = $_GET["dir"];
+
+    $d = new DateTime();
+    $dateNow = new DateTime();
+
+    $start = $dateNow->format("Y-m-d");
+    $end = $dateNow->modify("+1 day")->format("Y-m-d");
+
+    /*
+     *  To check if the length of number being sent is 7
+     */
+     if(!is_null($idnumber) && strlen($idnumber) == 7){
+       if(self::studentExists($idnumber)){
+        $command = Core\db::query(array("SELECT gate, time FROM proj_attendance WHERE idnumber = ? and time >= \"$start 00:00:00\" AND time < \"$end\"", array($idnumber)));
+
+        // We have a result, how many interval in seconds can we record
+        if(count($command) > 0) {
+          $currentTime = $d->format("Y-m-d H:i:s");
+          $currentYear = $d->format("Y");
+          $last = $command[count($command)-1];
+
+          // Check if the elapsed time between the current timestamp and the
+          // last record in the database for today is more than the interval
+          if((strtotime($currentTime) - strtotime($last["time"])) >= $interval) {
+            $command = Core\db::query(array("INSERT INTO proj_attendance (idnumber, gate, time, syear) VALUES (?, ?, ?, ?)", array($idnumber, $direction, $currentTime, $currentYear)));
+            if($command) {
+              error_log("[--SMS GATEWAY--] INSERT SUCCESS, the interval has passed.");
+            }
+          } else {
+            error_log("[--SMS GATEWAY--] INSERT FAILED, the interval hasn't passed.");
+          }
+
+        // INSERT record if student does not have one for today.
+        } else {
+          $command = Core\db::query(array("INSERT INTO proj_attendance (idnumber, gate, time, syear) VALUES (?, ?, ?, ?)", array($idnumber, $d, $dateNow->format("Y-m-d H:i:s"), $dateNow->format("Y"))));
+          if($command) {
+            error_log("[--SMS GATEWAY--] INSERT SUCCESS, there is no record for today.");
+          }
+        }
+      }
+     }
+    }
+
+  /*
+   *  LOGIC for Alternate IN and OUT. Where the first entry can be an IN or OUT
+   *  but the next record has to be the opposite of the previous. Like if the
+   *  first one is IN, the next one should be an OUT, vice versa.
+   *
+   */
+  public static function Record_V2(){
     $idnumber = $_GET["idnumber"];
     $direction = $_GET["dir"];
 
@@ -222,5 +289,5 @@ class SMS {
   }
 }
 
-SMS::Record();
-// SMS::Sender();
+// SMS::Record();
+SMS::Sender();
