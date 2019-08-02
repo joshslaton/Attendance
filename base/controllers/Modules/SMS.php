@@ -37,22 +37,28 @@ class SMS {
       $temp = array();
       // Evaluate each record
       if(count($records) > 0) {
-        array_push($temp, $records[0]);
-        foreach($records as $k=>$v) {
-          if($v["gate"] == "in") {
-
-          }
-        }
+        self::displayArray($records, "gate", "in");
       }
+      echo "<br>";
+      echo "<br>";
+      print_r($temp);
 
-      if(count($toSend) > 0) {
-        foreach($toSend as $tS) {
-          print_r($tS);
-          echo "<br>";
-        }
-      }
+      // if(count($toSend) > 0) {
+      //   foreach($toSend as $tS) {
+      //     print_r($tS);
+      //     echo "<br>";
+      //   }
+      // }
   }
 
+  private static function displayArray($arr, $k, $v) {
+    foreach($arr as $r) {
+      if($r[$k] == $v) {
+        print_r($r);
+        echo "<br>";
+      }
+    }
+  }
   public static function Record(){
     $interval = 10;
     $idnumber = $_GET["idnumber"];
