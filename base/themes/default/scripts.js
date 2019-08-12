@@ -64,7 +64,7 @@ function getListOfStudents() {
             for(var j = 0; j < obj.length; j++) {
               var id = obj[j].idnumber
               var n = obj[j].sname
-              t.find("tbody").append("<tr data-idnumber=\"+id+\" data-name=\""+n+"\"><td>"+id+"</td><td>"+n+"</td><td><a href=\"#View\">View</a> | <a href=\"#Edit\">Edit</a> | <a href=\"#Print\">Print</a></td></tr>")
+              t.find("tbody").append("<tr data-idnumber=\""+id+"\" data-name=\""+n+"\"><td>"+id+"</td><td>"+n+"</td><td><a href=\"#View\">View</a> | <a href=\"#Edit\">Edit</a> | <a href=\"#Print\">Print</a></td></tr>")
             }
 
             var table = $("#studentTable");

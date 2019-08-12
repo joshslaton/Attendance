@@ -11,8 +11,7 @@ class SMS {
     $dateNow = new DateTime();
     $start = $dateNow->format("Y-m-d");
     $end = $dateNow->modify("+1 day")->format("Y-m-d");
-
-    $q1 = "SELECT " .
+    $q_in = "SELECT " .
                 "proj_attendance.id, " .
                 "proj_attendance.idnumber, " .
                 "proj_attendance.isSent, " .
@@ -23,32 +22,105 @@ class SMS {
               "FROM proj_student " .
               "LEFT JOIN proj_attendance " .
               "ON proj_student.idnumber = proj_attendance.idnumber " .
-              "WHERE time >= \"$start 00:00:00\" AND time < \"$end 00:00:00\"";
+              "WHERE gate = \"in\" AND time >= \"$start 00:00:00\" AND time < \"$end 00:00:00\"";
 
+    $q_out = "SELECT " .
+                "proj_attendance.id, " .
+                "proj_attendance.idnumber, " .
+                "proj_attendance.isSent, " .
+                "proj_attendance.gate, " .
+                "proj_student.fname AS name, " .
+                "proj_attendance.time, " .
+                "proj_student.contact " .
+              "FROM proj_student " .
+              "LEFT JOIN proj_attendance " .
+              "ON proj_student.idnumber = proj_attendance.idnumber " .
+              "WHERE gate = \"out\" AND time >= \"$start 00:00:00\" AND time < \"$end 00:00:00\"";
 
-      $records = Core\db::query(array($q1));
+      $q_inlast = "SELECT " .
+                "proj_attendance.id, " .
+                "proj_attendance.idnumber, " .
+                "proj_attendance.isSent, " .
+                "proj_attendance.gate, " .
+                "proj_student.fname AS name, " .
+                "proj_attendance.time, " .
+                "proj_student.contact " .
+              "FROM proj_student " .
+              "LEFT JOIN proj_attendance " .
+              "ON proj_student.idnumber = proj_attendance.idnumber " .
+              "WHERE gate = \"in\" AND isSent = \"1\" AND time >= \"$start 00:00:00\" AND time < \"$end 00:00:00\" " .
+              "ORDER BY id DESC LIMIT 1";
 
-      // 1 hour interval
-      // foreach($records as $record) {
-      //   echo $record["time"]." - ".$record["isSent"];
-      //   echo "<br>";
-      // }
-      $toSend = array();
-      $temp = array();
-      // Evaluate each record
-      if(count($records) > 0) {
-        self::displayArray($records, "gate", "in");
+      $q_outlast = "SELECT " .
+                "proj_attendance.id, " .
+                "proj_attendance.idnumber, " .
+                "proj_attendance.isSent, " .
+                "proj_attendance.gate, " .
+                "proj_student.fname AS name, " .
+                "proj_attendance.time, " .
+                "proj_student.contact " .
+              "FROM proj_student " .
+              "LEFT JOIN proj_attendance " .
+              "ON proj_student.idnumber = proj_attendance.idnumber " .
+              "WHERE gate = \"out\" AND isSent = \"1\" AND time >= \"$start 00:00:00\" AND time < \"$end 00:00:00\" " .
+              "ORDER BY id DESC LIMIT 1";
+
+    $in_records = Core\db::query(array($q_in));
+    $out_records = Core\db::query(array($q_out));
+    $in_last = Core\db::query(array($q_inlast));
+    $out_last = Core\db::query(array($q_outlast));
+    $in_found = false;
+    $out_found = false;
+    // IN
+    foreach($in_records as $r) {
+      if(!is_null($in_last)) {
+
+        if($r["id"] >= $in_last[0]["id"]) {
+          $l = new DateTime($in_last[0]["time"]);
+          $t = new DateTime($r["time"]);
+          $diff = $l->diff($t);
+          if((intval($diff->format("%h")) >= 1) && !$in_found) {
+            print_r($t->format("H:i:s"));
+            echo "<br>";
+            $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($r["id"])));
+            $in_found = true;
+          }
+        }
       }
-      echo "<br>";
-      echo "<br>";
-      print_r($temp);
+    }
+    $in_found = false;
 
-      // if(count($toSend) > 0) {
-      //   foreach($toSend as $tS) {
-      //     print_r($tS);
-      //     echo "<br>";
-      //   }
-      // }
+    foreach($out_records as $r) {
+      if(!is_null($out_last)) {
+
+        if($r["id"] >= $out_last[0]["id"]) {
+          $l = new DateTime($out_last[0]["time"]);
+          $t = new DateTime($r["time"]);
+          $diff = $l->diff($t);
+          if((intval($diff->format("%h")) >= 1) && !$out_found) {
+            print_r($t->format("H:i:s"));
+            echo "<br>";
+            $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($r["id"])));
+            $found = true;
+          }
+        }
+      }
+    }
+    $out_found = false;
+
+    // TODO: Always send the first record of IN or OUT of the day.
+    if(count($in_records) > 0) {
+      if($in_records[0]["isSent"] == "0") {
+        $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($in_records[0]["id"])));
+      }
+    }
+
+    if(count($out_records) > 0) {
+      if($out_records[0]["isSent"] == "0") {
+        $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($out_records[0]["id"])));
+      }
+    }
+
   }
 
   private static function displayArray($arr, $k, $v) {
@@ -65,22 +137,24 @@ class SMS {
     $direction = $_GET["dir"];
 
     $d = new DateTime();
+    $currentTime = $d->format("Y-m-d H:i:s");
+    $currentYear = $d->format("Y");
+
     $dateNow = new DateTime();
 
     $start = $dateNow->format("Y-m-d");
     $end = $dateNow->modify("+1 day")->format("Y-m-d");
-
     /*
      *  To check if the length of number being sent is 7
      */
      if(!is_null($idnumber) && strlen($idnumber) == 7){
        if(self::studentExists($idnumber)){
+        echo $idnumber;
         $command = Core\db::query(array("SELECT gate, time FROM proj_attendance WHERE idnumber = ? and time >= \"$start 00:00:00\" AND time < \"$end\"", array($idnumber)));
 
         // We have a result, how many interval in seconds can we record
         if(count($command) > 0) {
-          $currentTime = $d->format("Y-m-d H:i:s");
-          $currentYear = $d->format("Y");
+          
           $last = $command[count($command)-1];
 
           // Check if the elapsed time between the current timestamp and the
@@ -96,7 +170,7 @@ class SMS {
 
         // INSERT record if student does not have one for today.
         } else {
-          $command = Core\db::query(array("INSERT INTO proj_attendance (idnumber, gate, time, syear) VALUES (?, ?, ?, ?)", array($idnumber, $d, $dateNow->format("Y-m-d H:i:s"), $dateNow->format("Y"))));
+          $command = Core\db::query(array("INSERT INTO proj_attendance (idnumber, gate, time, syear) VALUES (?, ?, ?, ?)", array($idnumber, $direction, $currentTime, $currentYear)));
           if($command) {
             error_log("[--SMS GATEWAY--] INSERT SUCCESS, there is no record for today.");
           }
@@ -295,5 +369,10 @@ class SMS {
   }
 }
 
-// SMS::Record();
-SMS::Sender();
+if(!is_null($_GET["action"])) {
+  if($_GET["action"] == "s")
+      SMS::Sender();
+  
+  if($_GET["action"] == "r")
+      SMS::Record();
+}

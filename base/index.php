@@ -76,9 +76,16 @@ if(is_file($bootstrapFile) && file_exists($bootstrapFile)) {
   );
 
   Router::addRoute(
-    '/Modules/SMS/',
+    '/SMS/',
     function() { Pages::getContents(dirname(__FILE__) .
       "/controllers/Modules/SMS.php", False);
+    }
+  );
+
+  Router::addRoute(
+    '/App/',
+    function() { Pages::getContents(dirname(__FILE__) .
+      "/controllers/Modules/App.php", False);
     }
   );
 
