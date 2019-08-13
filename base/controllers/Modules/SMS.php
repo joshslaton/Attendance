@@ -7,6 +7,7 @@ DEFINE("isDebugMode",false);
 class SMS {
 
   public static function Sender() {
+    error_log("Sending....");
     $sendingInterval = 3600;
     $dateNow = new DateTime();
     $start = $dateNow->format("Y-m-d");
@@ -83,7 +84,16 @@ class SMS {
             print_r($t->format("H:i:s"));
             echo "<br>";
             $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($r["id"])));
-            $in_found = true;
+	    $in_found = true;
+
+
+	    $n = $r["time"];
+	    $t = new DateTime($r["time"]);
+	    $msg = "$n has passed the entrace gate at ".$t->format("Y-m-d h:i:sA");
+	    $numbers = explode(";", $r["contact"]);
+	    foreach($numbers as $number) {
+	      self::sendSMS($number, $msg);
+	    }
           }
         }
       }
@@ -101,7 +111,15 @@ class SMS {
             print_r($t->format("H:i:s"));
             echo "<br>";
             $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($r["id"])));
-            $found = true;
+	    $found = true;
+
+	    $n = $r["time"];
+	    $t = new DateTime($r["time"]);
+	    $msg = "$n has passed the entrace gate at ".$t->format("Y-m-d h:i:sA");
+	    $numbers = explode(";", $r["contact"]);
+	    foreach($numbers as $number) {
+	      self::sendSMS($number, $msg);
+	    }
           }
         }
       }
@@ -111,13 +129,27 @@ class SMS {
     // TODO: Always send the first record of IN or OUT of the day.
     if(count($in_records) > 0) {
       if($in_records[0]["isSent"] == "0") {
-        $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($in_records[0]["id"])));
+	      $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($in_records[0]["id"])));
+	      $n = $in_records[0]["time"];
+	      $t = new DateTime($in_records[0]["time"]);
+	      $msg = "$n has passed the entrace gate at ".$t->format("Y-m-d h:i:sA");
+	      $numbers = explode(";", $in_records[0]["contact"]);
+	      foreach($numbers as $number) {
+		      self::sendSMS($number, $msg);
+	      }
       }
     }
 
     if(count($out_records) > 0) {
       if($out_records[0]["isSent"] == "0") {
-        $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($out_records[0]["id"])));
+	      $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($out_records[0]["id"])));
+	      $n = $out_records[0]["name"];
+	      $t = new DateTime($out_records[0]["time"]);
+	      $msg = "$n has passed the exit gate at ".$t->format("Y-m-d h:i:sA");
+	      $numbers = explode(";", $out_records[0]["contact"]);
+	      foreach($numbers as $number) {
+		      self::sendSMS($number, $msg);
+	      }
       }
     }
 
@@ -149,9 +181,8 @@ class SMS {
      */
      if(!is_null($idnumber) && strlen($idnumber) == 7){
        if(self::studentExists($idnumber)){
-        echo $idnumber;
         $command = Core\db::query(array("SELECT gate, time FROM proj_attendance WHERE idnumber = ? and time >= \"$start 00:00:00\" AND time < \"$end\"", array($idnumber)));
-
+	print_r($command);
         // We have a result, how many interval in seconds can we record
         if(count($command) > 0) {
           
@@ -299,8 +330,8 @@ class SMS {
             "key" => sha1($number.sha1($message)."SJRFID"."SJRFID"),
             "id" => "1000",
         );
-        print_r($data);
-        echo "<br>";
+        #print_r($data);
+        #echo "<br>";
         $curlopt = array(
     			CURLOPT_URL => "https://lcaccess2.lorma.edu/sms/",
     			CURLOPT_POST => true,
@@ -319,14 +350,14 @@ class SMS {
         // print_r('https://lcaccess2.lorma.edu/sms/?'.http_build_query($data));
 
 
-        print_r(array(
-            'response' => strpos($response,"{")!==false
-                ? json_decode($response)
-                : $response,
-            'error' => $error
-            ));
-            echo "<br>";
-            echo "<br>";
+        #print_r(array(
+         #   'response' => strpos($response,"{")!==false
+          #      ? json_decode($response)
+           #     : $response,
+            #'error' => $error
+            #));
+            #echo "<br>";
+	    #echo "<br>";
 
         return array(
             'response' => strpos($response,"{")!==false
@@ -370,9 +401,8 @@ class SMS {
 }
 
 if(!is_null($_GET["action"])) {
-  if($_GET["action"] == "s")
-      SMS::Sender();
-  
-  if($_GET["action"] == "r")
-      SMS::Record();
+  if($_GET["action"] == "r") {
+	  SMS::Record();
+  }
 }
+SMS::Sender();
