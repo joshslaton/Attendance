@@ -1,7 +1,7 @@
 <?php
-include("/vagrant/html/base/controllers/Registry.php");  
-include("/vagrant/html/base/configs/localhost.config.php");  
-include("/vagrant/html/base/models/DB.php");  
+#include("/var/www/html/controllers/Registry.php");  
+include("/var/www/html/configs/192.168.8.17.config.php");  
+#include("/var/www/html/models/DB.php");  
 
 class SMS {
 
@@ -100,7 +100,7 @@ class SMS {
 
     if(count($in_records) > 1) {
       foreach($in_records as $r) {
-        if(!is_null($in_last)) {
+        if(count($in_last) > 0) {
           // Eval
           if($r["id"] >= $in_last[0]["id"]) {
             $l = new DateTime($in_last[0]["time"]); // Last
@@ -126,8 +126,7 @@ class SMS {
 
     if(count($out_records) > 1) {
       foreach($out_records as $r) {
-        if(!is_null($out_last)) {
-  
+        if(count($out_last) > 1) {
           if($r["id"] >= $out_last[0]["id"]) {
             $l = new DateTime($out_last[0]["time"]);
             $t = new DateTime($r["time"]);
@@ -228,8 +227,8 @@ class SMS {
 }
 
 set_time_limit(60);
-for($i = 0; $i <= 59; $i++) {
-  error_log("CHECKING FOR SMS QUEUE");
+for($i = 0; $i <= 199; $i++) {
+  error_log("CHECKING FOR SMS QUEUE $i");
   SMS::Sender();
-  sleep(1);
+  sleep(0.8);
 }
