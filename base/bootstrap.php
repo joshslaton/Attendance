@@ -29,7 +29,7 @@ $configFilepath = $currentDir . DIRECTORY_SEPARATOR . "configs/" . $host . ".con
 if(file_exists($configFilepath) && is_file($configFilepath)){
   require($configFilepath);
 }else{
-  echo "Config file is missing! Please contact IT Administrator.";
+  echo $_SERVER["HTTP_HOST"]." Config file is missing! Please contact IT Administrator.";
   error_log("Config file is missing! Please contact IT Administrator.");
   exit();
 }

@@ -117,7 +117,7 @@ class SMS {
               foreach($numbers as $number) {
               	self::sendSMS($number, $msg);
               }
-	    }
+            }
           }
         }
       }
@@ -142,7 +142,7 @@ class SMS {
               foreach($numbers as $number) {
               	self::sendSMS($number, $msg);
               }
-	    }
+            }
           }
         }
       }
@@ -228,7 +228,7 @@ class SMS {
 
 set_time_limit(60);
 for($i = 0; $i <= 200; $i++) {
-  //error_log("CHECKING FOR SMS QUEUE $i");
+  error_log("CHECKING FOR SMS QUEUE $i");
   SMS::Sender();
   #sleep(0.8);
 }
