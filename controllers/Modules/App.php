@@ -1,15 +1,17 @@
 <?php
 #include("/var/www/html/controllers/Registry.php");  
 include("/var/www/html/configs/gatekeeper.lorma.net.config.php");  
+// include("/vagrant/html/configs/localhost.config.php");  
 #include("/var/www/html/models/DB.php");  
 class SMS {
   
+  // TODO sent isSent = 1 if the message returned from the response is success.
   public static function Sender() {
     $studentdb = Core\Registry::get("config/database/studentdb");
-    $sendingInterval = 3600;
     $dateNow = new DateTime();
     $startDate = $dateNow->format("Y-m-d");
     $endDate = $dateNow->modify("+1 day")->format("Y-m-d");
+    $counter = 0;
 
     // Query for checking records of student today
     // IN
@@ -74,28 +76,46 @@ class SMS {
     // specified interval, if they are, do not send. If they are not, send them
     if(count($in_records) > 0) {
       if($in_records[0]["isSent"] == "0") {
-	      $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($in_records[0]["id"])));
-	      $n = $in_records[0]["name"];
+        Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($in_records[0]["id"])));
+        // Copy to sent table, we might not need to clean the attendance table for future records
+        $cp = "INSERT INTO proj_sent(`idnumber`, `gate`, `isSent`, `time`,`syear`) 
+                  SELECT `idnumber`, `gate`, `isSent`, `time`, `syear` 
+                  FROM proj_attendance 
+                  WHERE `id` = ".$in_records[0]["id"];
+	      $cmd = Core\db::query(array($cp), array());
+
+        $n = $in_records[0]["name"];
 	      $t = new DateTime($in_records[0]["time"]);
 	      $msg = "$n has passed the entrance gate at ".$t->format("Y-m-d h:i:sA");
 	      $numbers = explode(";", $in_records[0]["contact"]);
 	      foreach($numbers as $number) {
-		       self::sendSMS($number, $msg);
+		      //  self::sendSMS($number, $msg);
 	      }
       }
+    } else {
+      $counter += 1;
     }
 
     if(count($out_records) > 0) {
       if($out_records[0]["isSent"] == "0") {
-	      $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($out_records[0]["id"])));
+        Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($out_records[0]["id"])));
+        // Copy to sent table, we might not need to clean the attendance table for future records
+        $cp = "INSERT INTO proj_sent(`idnumber`, `gate`, `isSent`, `time`,`syear`) 
+                  SELECT `idnumber`, `gate`, `isSent`, `time`, `syear` 
+                  FROM proj_attendance 
+                  WHERE `id` = ".$in_records[0]["id"];
+        $cmd = Core\db::query(array($cp), array());
+
 	      $n = $out_records[0]["name"];
 	      $t = new DateTime($out_records[0]["time"]);
 	      $msg = "$n has passed the exit gate at ".$t->format("Y-m-d h:i:sA");
 	      $numbers = explode(";", $out_records[0]["contact"]);
 	      foreach($numbers as $number) {
-		       self::sendSMS($number, $msg);
+		      //  self::sendSMS($number, $msg);
 	      }
       }
+    } else {
+      $counter += 1;
     }
 
     if(count($in_records) > 1) {
@@ -108,6 +128,13 @@ class SMS {
             $diff = $l->diff($t);
             if((intval($diff->format("%h")) >= 1) && !$in_found) { // BASIS FOR SENDING DELAY
               $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($r["id"])));
+              // Copy to sent table, we might not need to clean the attendance table for future records
+              $cp = "INSERT INTO proj_sent(`idnumber`, `gate`, `isSent`, `time`,`syear`) 
+                  SELECT `idnumber`, `gate`, `isSent`, `time`, `syear` 
+                  FROM proj_attendance 
+                  WHERE `id` = ".$r["id"];
+
+              $cmd = Core\db::query(array($cp), array());
               $in_found = true;
   
               $n = $r["time"];
@@ -115,13 +142,15 @@ class SMS {
               $msg = "$n has passed the entrace gate at ".$t->format("Y-m-d h:i:sA");
               $numbers = explode(";", $r["contact"]);
               foreach($numbers as $number) {
-              	self::sendSMS($number, $msg);
+              	// self::sendSMS($number, $msg);
               }
 	    }
           }
         }
       }
       $in_found = false;
+    } else {
+      $counter += 1;
     }
 
     if(count($out_records) > 1) {
@@ -134,19 +163,33 @@ class SMS {
             if((intval($diff->format("%h")) >= 1) && !$out_found) { // BASIS FOR SENDING DELAY
               echo "<br>";
               $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($r["id"])));
-  
+              // Copy to sent table, we might not need to clean the attendance table for future records
+              $cp = "INSERT INTO proj_sent(`idnumber`, `gate`, `isSent`, `time`,`syear`) 
+                  SELECT `idnumber`, `gate`, `isSent`, `time`, `syear` 
+                  FROM proj_attendance 
+                  WHERE `id` = ".$r["id"];
+
+              $cmd = Core\db::query(array($cp), array());
+              
               $n = $r["name"];
               $t = new DateTime($r["time"]);
               $msg = "$n has passed the entrace gate at ".$t->format("Y-m-d h:i:sA");
               $numbers = explode(";", $r["contact"]);
               foreach($numbers as $number) {
-              	self::sendSMS($number, $msg);
+              	// self::sendSMS($number, $msg);
               }
 	    }
           }
         }
       }
       $out_found = false;
+    } else {
+      $counter += 1;
+    }
+
+    if($counter == 4) {
+      // All checks have been done and there is nothing to be sent. Clean the table.
+      // $cmd = Core\db::query(array("DELETE FROM proj_attendance WHERE `isSent` = 0", array()));
     }
   }
 
@@ -227,7 +270,7 @@ class SMS {
 }
 set_time_limit(60);
 for($i = 0; $i <= 59; ++$i) {
-  error_log("CHECKING FOR SMS QUEUE $i");
+  // error_log("CHECKING FOR SMS QUEUE $i");
   SMS::Sender();
   sleep(1);
 }

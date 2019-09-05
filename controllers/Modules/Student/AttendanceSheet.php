@@ -205,7 +205,8 @@ if ($_POST["action"] != null) {
 
         if ($_POST["viewType"] == "DTR") {
             // get start end of current term
-            $results = Core\db::query(array("SELECT gate, time FROM proj_attendance WHERE idnumber = ? and syear = ?", array($idnumber, $year)));
+            // $results = Core\db::query(array("SELECT gate, time FROM proj_attendance WHERE idnumber = ? and syear = ?", array($idnumber, $year)));
+            $results = Core\db::query(array("SELECT gate, time FROM proj_sent WHERE idnumber = ? and syear = ?", array($idnumber, $year)));
             echo json_encode($results);
         }
         if ($_POST["viewType"] == "Classcard") {
@@ -221,7 +222,8 @@ if ($_POST["action"] != null) {
                     $m = date("n", mktime(0, 0, 0, $i, 1, $year));
 
                     // Params: MONTH, YEAR, ID NUMBER, SCHOOL YEAR
-                    $q = "SELECT COUNT(DISTINCT day(time)) as '".$m."' FROM proj_attendance WHERE day(time) between 1 and 31 && month(time) = ? && year(time) = ? && idnumber = ? && syear = ?";
+                    // $q = "SELECT COUNT(DISTINCT day(time)) as '".$m."' FROM proj_attendance WHERE day(time) between 1 and 31 && month(time) = ? && year(time) = ? && idnumber = ? && syear = ?";
+                    $q = "SELECT COUNT(DISTINCT day(time)) as '".$m."' FROM proj_sent WHERE day(time) between 1 and 31 && month(time) = ? && year(time) = ? && idnumber = ? && syear = ?";
                     $results = Core\db::query(array($q, array($i, $y, $idnumber, $year)));
                     $temp["present"][$y] += $results[0];
                 }
