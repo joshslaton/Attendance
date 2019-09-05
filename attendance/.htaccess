@@ -1,9 +1,0 @@
-Options +FollowSymLinks
-Options -Indexes
-RewriteEngine On
-
-RewriteBase /
-RewriteCond %{ENV:REDIRECT_STATUS} ^$
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ router.php?url=$1 [QSA,NC,L]
