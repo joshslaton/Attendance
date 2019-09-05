@@ -22,7 +22,7 @@ class SMS {
                 "proj_attendance.time, " .
                 $studentdb.".contact " .
               "FROM ".$studentdb .
-              "LEFT JOIN proj_attendance " .
+              " LEFT JOIN proj_attendance " .
               "ON ".$studentdb.".idnumber = proj_attendance.idnumber " .
               "WHERE gate = \"in\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\"";
 
@@ -35,7 +35,7 @@ class SMS {
                 $studentdb.".fname AS name, " .
                 "proj_attendance.time, " .
                 $studentdb.".contact " .
-              "FROM ".$studentdb .
+              " FROM ".$studentdb .
               "LEFT JOIN proj_attendance " .
               "ON ".$studentdb.".idnumber = proj_attendance.idnumber " .
               "WHERE gate = \"out\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\"";
@@ -229,5 +229,5 @@ set_time_limit(60);
 for($i = 0; $i <= 200; $i++) {
   //error_log("CHECKING FOR SMS QUEUE $i");
   SMS::Sender();
-  #sleep(0.8);
+  sleep(0.8);
 }
