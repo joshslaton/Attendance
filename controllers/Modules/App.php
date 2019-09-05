@@ -226,8 +226,8 @@ class SMS {
   }
 }
 set_time_limit(60);
-for($i = 0; $i <= 200; $i++) {
-  //error_log("CHECKING FOR SMS QUEUE $i");
+for($i = 0; $i <= 59; ++$i) {
+  error_log("CHECKING FOR SMS QUEUE $i");
   SMS::Sender();
-  sleep(0.8);
+  sleep(1);
 }
