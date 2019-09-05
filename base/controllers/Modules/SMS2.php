@@ -77,7 +77,7 @@ class SMS {
 	      $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($in_records[0]["id"])));
 	      $n = $in_records[0]["name"];
 	      $t = new DateTime($in_records[0]["time"]);
-	      $msg = "$n has passed the entrance gate at ".$t->format("Y-m-d h:i:sA");
+	      $msg = "$n has passed the entrace gate at ".$t->format("Y-m-d h:i:sA");
 	      $numbers = explode(";", $in_records[0]["contact"]);
 	      foreach($numbers as $number) {
 		       self::sendSMS($number, $msg);
@@ -117,7 +117,7 @@ class SMS {
               foreach($numbers as $number) {
               	self::sendSMS($number, $msg);
               }
-	    }
+            }
           }
         }
       }
@@ -142,7 +142,7 @@ class SMS {
               foreach($numbers as $number) {
               	self::sendSMS($number, $msg);
               }
-	    }
+            }
           }
         }
       }
@@ -228,7 +228,7 @@ class SMS {
 
 set_time_limit(60);
 for($i = 0; $i <= 200; $i++) {
-  //error_log("CHECKING FOR SMS QUEUE $i");
+  error_log("CHECKING FOR SMS QUEUE $i");
   SMS::Sender();
   #sleep(0.8);
 }

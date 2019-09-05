@@ -1,6 +1,6 @@
 <?php
+
 if(!is_null($_GET["dir"]) && !is_null($_GET["idnumber"])) {
-  error_log($_GET["idnumber"]);
   $d = new DateTime();
   $schoolYear = 2019;
   $command = Core\db::query(
