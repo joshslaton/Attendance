@@ -89,7 +89,7 @@ class SMS {
 	      $msg = "$n has passed the entrance gate at ".$t->format("Y-m-d h:i:sA");
 	      $numbers = explode(";", $in_records[0]["contact"]);
 	      foreach($numbers as $number) {
-		      //  self::sendSMS($number, $msg);
+		       self::sendSMS($number, $msg);
 	      }
       }
     } else {
@@ -111,7 +111,7 @@ class SMS {
 	      $msg = "$n has passed the exit gate at ".$t->format("Y-m-d h:i:sA");
 	      $numbers = explode(";", $out_records[0]["contact"]);
 	      foreach($numbers as $number) {
-		      //  self::sendSMS($number, $msg);
+		       self::sendSMS($number, $msg);
 	      }
       }
     } else {
@@ -142,7 +142,7 @@ class SMS {
               $msg = "$n has passed the entrace gate at ".$t->format("Y-m-d h:i:sA");
               $numbers = explode(";", $r["contact"]);
               foreach($numbers as $number) {
-              	// self::sendSMS($number, $msg);
+              	self::sendSMS($number, $msg);
               }
 	    }
           }
@@ -176,7 +176,7 @@ class SMS {
               $msg = "$n has passed the entrace gate at ".$t->format("Y-m-d h:i:sA");
               $numbers = explode(";", $r["contact"]);
               foreach($numbers as $number) {
-              	// self::sendSMS($number, $msg);
+              	self::sendSMS($number, $msg);
               }
 	    }
           }
