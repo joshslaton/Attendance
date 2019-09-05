@@ -1,11 +1,11 @@
 <?php
 #include("/var/www/html/controllers/Registry.php");  
-include("/var/www/html/configs/192.168.8.17.config.php");  
+include("/var/www/html/configs/gatekeeper.lorma.net.config.php");  
 #include("/var/www/html/models/DB.php");  
-
 class SMS {
-
+  
   public static function Sender() {
+    $studentdb = Core\Registry::get("config/database/studentdb");
     $sendingInterval = 3600;
     $dateNow = new DateTime();
     $startDate = $dateNow->format("Y-m-d");
@@ -18,12 +18,12 @@ class SMS {
                 "proj_attendance.idnumber, " .
                 "proj_attendance.isSent, " .
                 "proj_attendance.gate, " .
-                "proj_student.fname AS name, " .
+                $studentdb.".fname AS name, " .
                 "proj_attendance.time, " .
-                "proj_student.contact " .
-              "FROM proj_student " .
+                $studentdb.".contact " .
+              "FROM ".$studentdb .
               "LEFT JOIN proj_attendance " .
-              "ON proj_student.idnumber = proj_attendance.idnumber " .
+              "ON ".$studentdb.".idnumber = proj_attendance.idnumber " .
               "WHERE gate = \"in\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\"";
 
     // OUT
@@ -32,12 +32,12 @@ class SMS {
                 "proj_attendance.idnumber, " .
                 "proj_attendance.isSent, " .
                 "proj_attendance.gate, " .
-                "proj_student.fname AS name, " .
+                $studentdb.".fname AS name, " .
                 "proj_attendance.time, " .
-                "proj_student.contact " .
-              "FROM proj_student " .
+                $studentdb.".contact " .
+              "FROM ".$studentdb .
               "LEFT JOIN proj_attendance " .
-              "ON proj_student.idnumber = proj_attendance.idnumber " .
+              "ON ".$studentdb.".idnumber = proj_attendance.idnumber " .
               "WHERE gate = \"out\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\"";
 
 
@@ -225,7 +225,6 @@ class SMS {
     return self::isSetParam('string',$params) ? $retstr."" : $retstr;
   }
 }
-
 set_time_limit(60);
 for($i = 0; $i <= 200; $i++) {
   //error_log("CHECKING FOR SMS QUEUE $i");
