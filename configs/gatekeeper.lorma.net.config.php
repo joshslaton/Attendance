@@ -24,7 +24,8 @@ $config['database'] = array(
   'host' => 'localhost',
   'username' => 'gatekeeper',
   'password' => 'esxivmware',
-  'database' => 'proj_gatekeeper'
+  'database' => 'proj_gatekeeper',
+  'studentdb' => 'proj_student2'
 );
 
 Core\Registry::set('config', $config); # Whats the purpose of this?

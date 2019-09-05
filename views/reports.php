@@ -6,7 +6,8 @@ $content .= "<div class='form-group reportsOptions' data-script='getListOfStuden
   $content .= "<p id=\"title\">Search by Grade</p>";
   $content .= "<br>";
   $content .= "<label for='gradeSelect'>Filter: </label>";
-  $gradeLevels = Core\db::query(array("SELECT ylevel FROM proj_yearlevel", array()));
+  // $gradeLevels = Core\db::query(array("SELECT ylevel FROM proj_yearlevel2", array()));
+  $gradeLevels = Core\db::query(array("SELECT DISTINCT ylevel FROM proj_student2", array()));
   $content .= "<select id='gradeSelect' class='form-control'  style='width: auto;'>";
     $content .= "<option selected='selected' value=''>Filter by Grade</option>";
     // $content .= "<option selected='selected' value='G11-HAS'>Grade 11 HAS</option>";
