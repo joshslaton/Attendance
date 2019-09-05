@@ -1,7 +1,6 @@
 <?php
 $config = array();
 $config['page_title'] = 'Attendance Monitoring';
-$config['page_title'] = 'Attendance Monitoring';
 
 $config['debug'] = true;
 $config['theme'] = 'default';
@@ -23,8 +22,8 @@ $config['dir']['plugins'] = $config['dir']['root'] . DIRECTORY_SEPARATOR . 'plug
 
 $config['database'] = array(
   'host' => 'localhost',
-  'username' => 'kiosk',
-  'password' => 'kiosk',
+  'username' => 'gatekeeper',
+  'password' => 'esxivmware',
   'database' => 'proj_gatekeeper'
 );
 
