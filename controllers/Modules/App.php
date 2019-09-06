@@ -98,13 +98,13 @@ class SMS {
                 $contacts = explode(";", $contacts);
                 $msg = "$n has passed the entrance gate at ".$dateNow->format("Y-m-d h:i:sA");
                 if(count($contacts) == 1) {
-                  // self::sendSMS($contacts[0], $msg);
+                  self::sendSMS($contacts[0], $msg);
                   error_log("[".$idnumber["idnumber"]."] Sending SMS to ".$contacts[0]);
                   Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                 } elseif(count($contacts) > 1) {
-                  print_r($ae);
+                  //print_r($ae);
                   foreach($contacts as $contact) {
-                    // self::sendSMS($contact, $msg);
+                    self::sendSMS($contact, $msg);
                     error_log("[".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                     Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                   }
@@ -130,7 +130,7 @@ class SMS {
       foreach($out_records2 as $idnumber) {
         $attendance_entry = Core\db::query(array("SELECT * from proj_attendance WHERE gate = \"out\" AND idnumber = ".$idnumber["idnumber"]));
         foreach($attendance_entry as $i => $ae) {
-          print_r($ae); echo "<br>";
+          //print_r($ae); echo "<br>";
           // Check first entry of student if its sent, send if not.
           if($i == 0){
             if($ae["isSent"] == 0){
@@ -141,13 +141,13 @@ class SMS {
                 $contacts = explode(";", $contacts);
                 $msg = "$n has passed the entrance gate at ".$dateNow->format("Y-m-d h:i:sA");
                 if(count($contacts) == 1) {
-                  // self::sendSMS($contacts[0], $msg);
+                  self::sendSMS($contacts[0], $msg);
                   error_log("[".$idnumber["idnumber"]."] Sending SMS to ".$contacts[0]);
                   Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                 } elseif(count($contacts) > 1) {
                   print_r($ae);
                   foreach($contacts as $contact) {
-                    // self::sendSMS($contact, $msg);
+                    self::sendSMS($contact, $msg);
                     error_log("[".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                     Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                   }
@@ -177,16 +177,17 @@ class SMS {
                   SELECT `idnumber`, `gate`, `isSent`, `time`, `syear` 
                   FROM proj_attendance 
                   WHERE `id` = ".$r["id"];
-
+	      
               $cmd = Core\db::query(array($cp), array());
               $in_found = true;
   
-              $n = $r["time"];
+              $n = $r["name"];
               $t = new DateTime($r["time"]);
               $msg = "$n has passed the entrance gate at ".$t->format("Y-m-d h:i:sA");
               $numbers = explode(";", $r["contact"]);
               foreach($numbers as $number) {
-              	//self::sendSMS($number, $msg);
+		      self::sendSMS($number, $msg);
+	      	      error_log("Sending SMS to ".$number);
               }
 	          }
           }
@@ -220,7 +221,8 @@ class SMS {
               $msg = "$n has passed the entrace gate at ".$t->format("Y-m-d h:i:sA");
               $numbers = explode(";", $r["contact"]);
               foreach($numbers as $number) {
-              	//self::sendSMS($number, $msg);
+              	self::sendSMS($number, $msg);
+	        error_log("Sending SMS to ".$number);
               }
 	    }
           }
@@ -312,9 +314,9 @@ class SMS {
     return self::isSetParam('string',$params) ? $retstr."" : $retstr;
   }
 }
-//set_time_limit(60);
-//for($i = 0; $i <= 59; ++$i) {
+set_time_limit(60);
+for($i = 0; $i <= 59; ++$i) {
   //error_log("CHECKING FOR SMS QUEUE $i");
   SMS::Sender();
-//  sleep(1);
-//}
+  sleep(1);
+}
