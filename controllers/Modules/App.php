@@ -26,7 +26,7 @@ class SMS {
               "FROM ".$studentdb .
               " LEFT JOIN proj_attendance " .
               "ON ".$studentdb.".idnumber = proj_attendance.idnumber " .
-              "WHERE gate = \"in\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\"";
+              "WHERE gate = \"in\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\" AND contact != \"\"";
 
     // OUT
     $q_out = "SELECT " .
@@ -38,9 +38,9 @@ class SMS {
                 "proj_attendance.time, " .
                 $studentdb.".contact " .
               " FROM ".$studentdb .
-              "LEFT JOIN proj_attendance " .
+              " LEFT JOIN proj_attendance " .
               "ON ".$studentdb.".idnumber = proj_attendance.idnumber " .
-              "WHERE gate = \"out\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\"";
+              "WHERE gate = \"out\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\" AND contact != \"\"";
 
 
     // Query for check the last sent record if there are any
@@ -89,11 +89,16 @@ class SMS {
 	      $msg = "$n has passed the entrance gate at ".$t->format("Y-m-d h:i:sA");
 	      $numbers = explode(";", $in_records[0]["contact"]);
 	      foreach($numbers as $number) {
-		       self::sendSMS($number, $msg);
+		       //self::sendSMS($number, $msg);
 	      }
       }
     } else {
       $counter += 1;
+    }
+
+    $test = $in_records;
+    foreach($test as $t) {
+	    print_r($t); echo "<br>";
     }
 
     if(count($out_records) > 0) {
@@ -111,7 +116,7 @@ class SMS {
 	      $msg = "$n has passed the exit gate at ".$t->format("Y-m-d h:i:sA");
 	      $numbers = explode(";", $out_records[0]["contact"]);
 	      foreach($numbers as $number) {
-		       self::sendSMS($number, $msg);
+		       //self::sendSMS($number, $msg);
 	      }
       }
     } else {
@@ -142,7 +147,7 @@ class SMS {
               $msg = "$n has passed the entrace gate at ".$t->format("Y-m-d h:i:sA");
               $numbers = explode(";", $r["contact"]);
               foreach($numbers as $number) {
-              	self::sendSMS($number, $msg);
+              	//self::sendSMS($number, $msg);
               }
 	    }
           }
@@ -176,7 +181,7 @@ class SMS {
               $msg = "$n has passed the entrace gate at ".$t->format("Y-m-d h:i:sA");
               $numbers = explode(";", $r["contact"]);
               foreach($numbers as $number) {
-              	self::sendSMS($number, $msg);
+              	//self::sendSMS($number, $msg);
               }
 	    }
           }
@@ -268,9 +273,9 @@ class SMS {
     return self::isSetParam('string',$params) ? $retstr."" : $retstr;
   }
 }
-set_time_limit(60);
-for($i = 0; $i <= 59; ++$i) {
-  // error_log("CHECKING FOR SMS QUEUE $i");
+//set_time_limit(60);
+//for($i = 0; $i <= 59; ++$i) {
+  //error_log("CHECKING FOR SMS QUEUE $i");
   SMS::Sender();
-  sleep(1);
-}
+//  sleep(1);
+//}
