@@ -64,6 +64,8 @@ class SMS {
             "WHERE gate = \"out\" AND isSent = \"1\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\" " .
             "ORDER BY id DESC LIMIT 1";
 
+    $in_records = Core\db::query(array($q_in));
+    $out_records = Core\db::query(array($q_out));
     $in_last = Core\db::query(array($q_last_in)); // Look for the last record of IN
     $out_last = Core\db::query(array($q_last_out)); // Look for the last record of OUT
     $in_found = false;
@@ -74,7 +76,7 @@ class SMS {
     // specified interval, if they are, do not send. If they are not, send them
     
     
-    $in_records = Core\db::query(
+    $in_records1 = Core\db::query(
       array(
         "SELECT DISTINCT idnumber ".
         "FROM proj_attendance ".
@@ -82,8 +84,8 @@ class SMS {
         "gate = \"in\" AND ".
         "time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\""
       ));
-    if(count($in_records) > 0) {
-      foreach($in_records as $idnumber) {
+    if(count($in_records1) > 0) {
+      foreach($in_records1 as $idnumber) {
         $attendance_entry = Core\db::query(array("SELECT * from proj_attendance WHERE gate = \"in\" idnumber = ".$idnumber["idnumber"]));
         foreach($attendance_entry as $i => $ae) {
           // Check first entry of student if its sent, send if not.
@@ -116,7 +118,7 @@ class SMS {
       }
     }
 
-    $out_records = Core\db::query(
+    $out_records2 = Core\db::query(
       array(
         "SELECT DISTINCT idnumber ".
         "FROM proj_attendance ".
@@ -124,8 +126,8 @@ class SMS {
         "gate = \"out\" AND ".
         "time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\""
       ));
-    if(count($out_records) > 0) {
-      foreach($out_records as $idnumber) {
+    if(count($out_records2) > 0) {
+      foreach($out_records2 as $idnumber) {
         $attendance_entry = Core\db::query(array("SELECT * from proj_attendance WHERE gate = \"out\" AND idnumber = ".$idnumber["idnumber"]));
         foreach($attendance_entry as $i => $ae) {
           print_r($ae); echo "<br>";
