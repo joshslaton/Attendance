@@ -31,7 +31,6 @@ function gradeLevelFilter() {
   var a = $('#filter-glevel');
   a.change( function() {
     $(this).each( function() {
-      console.log($(this).val());
     })
   })
 }
@@ -50,7 +49,6 @@ function getListOfStudents() {
   var btn = $('#search');
 
   btn.on("click", function(){
-
     if(g.val() != "" && v.val() != "" && s.val() == "") {
       t.find("tbody").html("")
       g.each( function(){
@@ -318,7 +316,6 @@ function computetotal() {
         var total = 0
         tb.children("tr").children("td[data-label='"+year+"-"+label+"']").each(function(){
           var v = $(this).html()
-          // console.log(v)
           total += parseInt(v)
         })
         tb.children("tr[rel='"+year+"-"+label+"']").children("td:last-child").html(total)
@@ -335,7 +332,6 @@ function loadStudentTable() {
 
   c.find('a[href="#View"]').click( function(e){
     id = $(this).closest("tr").data("idnumber")
-    console.log("test");
 
     $.ajax({
       // url: "http://localhost/attendance/views/studentInfo",
@@ -356,7 +352,6 @@ function loadStudentTable() {
 }
 
 function modalContainer(e, name) {
-  // console.log(e)
   // var student = JSON.parse(e);
   // var timeRecords = timeRecordsTable(student.time_records);
   var c = "<div class='modalContainer'>" +
@@ -464,7 +459,6 @@ function toPDF() {
     var doc = new jsPDF();
 
     res = doc.autoTableHtmlToJson(document.getElementById("attendanceSheet"))
-    console.log(res)
     // res = doc.autoTableHtmlToJson({
     //   html: "#attendanceSheet",
     //   styles: {

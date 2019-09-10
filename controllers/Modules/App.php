@@ -13,69 +13,6 @@ class SMS {
     $endDate = $dateNow->modify("+1 day")->format("Y-m-d");
     $counter = 0;
 
-    // Query for checking records of student today
-    // IN
-    $q_in = "SELECT " .
-                "proj_attendance.id, " .
-                "proj_attendance.idnumber, " .
-                "proj_attendance.isSent, " .
-                "proj_attendance.gate, " .
-                $studentdb.".fname AS name, " .
-                "proj_attendance.time, " .
-                $studentdb.".contact " .
-              "FROM ".$studentdb .
-              " LEFT JOIN proj_attendance " .
-              "ON ".$studentdb.".idnumber = proj_attendance.idnumber " .
-              "WHERE gate = \"in\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\" AND contact != \"\"";
-
-    // OUT
-    $q_out = "SELECT " .
-                "proj_attendance.id, " .
-                "proj_attendance.idnumber, " .
-                "proj_attendance.isSent, " .
-                "proj_attendance.gate, " .
-                $studentdb.".fname AS name, " .
-                "proj_attendance.time, " .
-                $studentdb.".contact " .
-              " FROM ".$studentdb .
-              " LEFT JOIN proj_attendance " .
-              "ON ".$studentdb.".idnumber = proj_attendance.idnumber " .
-              "WHERE gate = \"out\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\" AND contact != \"\"";
-
-
-    // Query for check the last sent record if there are any
-    // IN
-    $q_last_in = "SELECT " .
-                "proj_attendance.id, " .
-                "proj_attendance.idnumber, " .
-                "proj_attendance.isSent, " .
-                "proj_attendance.time " .
-              "FROM proj_attendance  " .
-              "WHERE gate = \"in\" AND isSent = \"1\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\" " .
-              "ORDER BY id DESC LIMIT 1";
-
-    // OUT
-    $q_last_out = "SELECT " .
-              "proj_attendance.id, " .
-              "proj_attendance.idnumber, " .
-              "proj_attendance.isSent, " .
-              "proj_attendance.time " .
-            "FROM proj_attendance  " .
-            "WHERE gate = \"out\" AND isSent = \"1\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\" " .
-            "ORDER BY id DESC LIMIT 1";
-
-    $in_records = Core\db::query(array($q_in));
-    $out_records = Core\db::query(array($q_out));
-    $in_last = Core\db::query(array($q_last_in)); // Look for the last record of IN
-    $out_last = Core\db::query(array($q_last_out)); // Look for the last record of OUT
-    $in_found = false;
-    $out_found = false;
-
-    // Always send the first IN or OUT record of the day, the time of the last sent
-    // message will be the basis of the next records, whether they are within the
-    // specified interval, if they are, do not send. If they are not, send them
-    
-    
     $in_records1 = Core\db::query(
       array(
         "SELECT DISTINCT idnumber ".
@@ -86,17 +23,19 @@ class SMS {
       ));
     if(count($in_records1) > 0) {
       foreach($in_records1 as $idnumber) {
-        $attendance_entry = Core\db::query(array("SELECT * from proj_attendance WHERE gate = \"in\" idnumber = ".$idnumber["idnumber"]));
-        foreach($attendance_entry as $i => $ae) {
+	$attendance_entry = Core\db::query(array("SELECT * from proj_attendance WHERE gate = \"in\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\" AND idnumber = ".$idnumber["idnumber"]));
+	foreach($attendance_entry as $i => $ae) {
           // Check first entry of student if its sent, send if not.
           if($i == 0){
             if($ae["isSent"] == 0){
-              $studentinfo = Core\db::query(array("SELECT fname, contact from ".$studentdb." WHERE idnumber = ".$idnumber["idnumber"]));
+	      $q = "SELECT fname, contact FROM ".$studentdb." WHERE idnumber = \"".$idnumber["idnumber"]."\"";
+	      $studentinfo = Core\db::query(array($q));
+	      // print_r($q); echo "<br>";
               if(count($studentinfo) > 0) {
                 $n = $studentinfo[0]["fname"];
                 $contacts = $studentinfo[0]["contact"];
                 $contacts = explode(";", $contacts);
-                $msg = "$n has passed the entrance gate at ".$dateNow->format("Y-m-d h:i:sA");
+		$msg = "$n has passed the entrance gate at ".$dateNow->format("Y-m-d H:i:sA");
                 if(count($contacts) == 1) {
                   self::sendSMS($contacts[0], $msg);
                   error_log("[".$idnumber["idnumber"]."] Sending SMS to ".$contacts[0]);
@@ -128,9 +67,8 @@ class SMS {
       ));
     if(count($out_records2) > 0) {
       foreach($out_records2 as $idnumber) {
-        $attendance_entry = Core\db::query(array("SELECT * from proj_attendance WHERE gate = \"out\" AND idnumber = ".$idnumber["idnumber"]));
+	$attendance_entry = Core\db::query(array("SELECT * from proj_attendance WHERE gate = \"out\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\" AND idnumber = ".$idnumber["idnumber"]));
         foreach($attendance_entry as $i => $ae) {
-          //print_r($ae); echo "<br>";
           // Check first entry of student if its sent, send if not.
           if($i == 0){
             if($ae["isSent"] == 0){
@@ -139,7 +77,7 @@ class SMS {
                 $n = $studentinfo[0]["fname"];
                 $contacts = $studentinfo[0]["contact"];
                 $contacts = explode(";", $contacts);
-                $msg = "$n has passed the entrance gate at ".$dateNow->format("Y-m-d h:i:sA");
+                $msg = "$n has passed the entrance gate at ".$dateNow->format("Y-m-d H:i:sA");
                 if(count($contacts) == 1) {
                   self::sendSMS($contacts[0], $msg);
                   error_log("[".$idnumber["idnumber"]."] Sending SMS to ".$contacts[0]);
@@ -161,82 +99,63 @@ class SMS {
       }
     }
     
+    if(count($in_records1) > 1 ) {
+        foreach($in_records1 as $idnumber) {
+	    $q = "SELECT id, idnumber, time " .
+		    "FROM proj_attendance " .
+		    "WHERE " .
+		    "idnumber = \"".$idnumber["idnumber"]."\" AND " .
+		    "gate = \"in\" AND " .
+		    "isSent = 1 " .
+		    "ORDER BY id DESC LIMIT 1";
+	    $last_in_record = Core\db::query(array($q));
+	    	if(count($last_in_record) > 0) {
 
-    if(count($in_records) > 1) {
-      foreach($in_records as $r) {
-        if(count($in_last) > 0) {
-          // Eval
-          if($r["id"] >= $in_last[0]["id"]) {
-            $l = new DateTime($in_last[0]["time"]); // Last
-            $t = new DateTime($r["time"]); // Current Time
-            $diff = $l->diff($t);
-            if((intval($diff->format("%h")) >= 1) && !$in_found) { // BASIS FOR SENDING DELAY
-              $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($r["id"])));
-              // Copy to sent table, we might not need to clean the attendance table for future records
-              $cp = "INSERT INTO proj_sent(`idnumber`, `gate`, `isSent`, `time`,`syear`) 
-                  SELECT `idnumber`, `gate`, `isSent`, `time`, `syear` 
-                  FROM proj_attendance 
-                  WHERE `id` = ".$r["id"];
-	      
-              $cmd = Core\db::query(array($cp), array());
-              $in_found = true;
-  
-              $n = $r["name"];
-              $t = new DateTime($r["time"]);
-              $msg = "$n has passed the entrance gate at ".$t->format("Y-m-d h:i:sA");
-              $numbers = explode(";", $r["contact"]);
-              foreach($numbers as $number) {
-		      self::sendSMS($number, $msg);
-	      	      error_log("Sending SMS to ".$number);
-              }
-	          }
-          }
-        }
-      }
-      $in_found = false;
-    } else {
-      $counter += 1;
+	   	 foreach($last_in_record as $lir) {
+	   	         $nextRecords = Core\db::query(array("SELECT * FROM proj_attendance WHERE gate = \"in\" AND idnumber = ? AND id > ? ", array($idnumber["idnumber"], $lir["id"])));
+	   	         $l = new DateTime($lir["time"]);
+	   	         foreach($nextRecords as $i=>$nr) {
+	   	     	    $n = new DateTime($nr["time"]);
+	   	     	    $diff = $l->diff($n);
+	   	     	    if(intval($diff->format("%h")) >= 1) {
+				    Core\db::query(array("UPDATE proj_attendance SET isSent = 1 WHERE id = ?", array($nr["id"])));
+				    $msg = $nr["name"]." has passed the entrance gate at ".$dateNow->format("Y-m-d H:i:sA");
+	   	     		    break;
+	   	     	    }
+	   	         }
+		 }
+		}
+	}
     }
 
-    if(count($out_records) > 1) {
-      foreach($out_records as $r) {
-        if(count($out_last) > 1) {
-          if($r["id"] >= $out_last[0]["id"]) {
-            $l = new DateTime($out_last[0]["time"]);
-            $t = new DateTime($r["time"]);
-            $diff = $l->diff($t);
-            if((intval($diff->format("%h")) >= 1) && !$out_found) { // BASIS FOR SENDING DELAY
-              echo "<br>";
-              $cmd = Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($r["id"])));
-              // Copy to sent table, we might not need to clean the attendance table for future records
-              $cp = "INSERT INTO proj_sent(`idnumber`, `gate`, `isSent`, `time`,`syear`) 
-                  SELECT `idnumber`, `gate`, `isSent`, `time`, `syear` 
-                  FROM proj_attendance 
-                  WHERE `id` = ".$r["id"];
-
-              $cmd = Core\db::query(array($cp), array());
-              
-              $n = $r["name"];
-              $t = new DateTime($r["time"]);
-              $msg = "$n has passed the entrace gate at ".$t->format("Y-m-d h:i:sA");
-              $numbers = explode(";", $r["contact"]);
-              foreach($numbers as $number) {
-              	self::sendSMS($number, $msg);
-	        error_log("Sending SMS to ".$number);
-              }
+    if(count($out_records2) > 1 ) {
+        foreach($out_records2 as $idnumber) {
+	    $q = "SELECT id, idnumber, time " .
+		    "FROM proj_attendance " .
+		    "WHERE " .
+		    "idnumber = \"".$idnumber["idnumber"]."\" AND " .
+		    "gate = \"out\" AND " .
+		    "isSent = 1 " .
+		    "ORDER BY id DESC LIMIT 1";
+	    $last_out_record = Core\db::query(array($q));
+	    if(count($last_out_record) > 0 ) {
+	    	foreach($last_out_record as $lor) {
+		    $nextRecords = Core\db::query(array("SELECT * FROM proj_attendance WHERE gate = \"out\" AND idnumber = ? AND id > ? ", array($idnumber["idnumber"], $lor["id"])));
+		    $l = new DateTime($lor["time"]);
+		    foreach($nextRecords as $i=>$nr) {
+			    $n = new DateTime($nr["time"]);
+			    $diff = $l->diff($n);
+			    if(intval($diff->format("%h")) >= 1) {
+				    Core\db::query(array("UPDATE proj_attendance SET isSent = 1 WHERE id = ?", array($nr["id"])));
+					$msg = $nr["name"]." has passed the entrance gate at ".$dateNow->format("Y-m-d H:i:sA");
+				    break;
+			    	}
+		    	}
+	    	}
 	    }
-          }
-        }
-      }
-      $out_found = false;
-    } else {
-      $counter += 1;
+	}
     }
 
-    if($counter == 4) {
-      // All checks have been done and there is nothing to be sent. Clean the table.
-      // $cmd = Core\db::query(array("DELETE FROM proj_attendance WHERE `isSent` = 0", array()));
-    }
   }
 
   // TODO: Send maximum of 200 messages in a minute
@@ -314,9 +233,9 @@ class SMS {
     return self::isSetParam('string',$params) ? $retstr."" : $retstr;
   }
 }
-set_time_limit(60);
-for($i = 0; $i <= 59; ++$i) {
+//set_time_limit(60);
+//for($i = 0; $i <= 59; ++$i) {
   //error_log("CHECKING FOR SMS QUEUE $i");
   SMS::Sender();
-  sleep(1);
-}
+//  sleep(1);
+//}
