@@ -37,13 +37,13 @@ class SMS {
                 $contacts = explode(";", $contacts);
 		$msg = "$n has passed the entrance gate at ".$dateNow->format("Y-m-d H:i:sA");
                 if(count($contacts) == 1) {
-                  //self::sendSMS($contacts[0], $msg);
+                  self::sendSMS($contacts[0], $msg);
                   error_log("[IN] [SINGLE] [".$idnumber["idnumber"]."] Sending SMS to ".$contacts[0]);
                   Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                 } elseif(count($contacts) > 1) {
                   //print_r($ae);
                   foreach($contacts as $contact) {
-                    //self::sendSMS($contact, $msg);
+                    self::sendSMS($contact, $msg);
                     error_log("[IN] [MULTIPLE] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                     Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                   }
@@ -79,12 +79,12 @@ class SMS {
                 $contacts = explode(";", $contacts);
                 $msg = "$n has passed the entrance gate at ".$dateNow->format("Y-m-d H:i:sA");
                 if(count($contacts) == 1) {
-                  //self::sendSMS($contacts[0], $msg);
+                  self::sendSMS($contacts[0], $msg);
                   error_log("[FIRST] [SINGLE] [OUT] [".$idnumber["idnumber"]."] Sending SMS to ".$contacts[0]);
                   Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                 } elseif(count($contacts) > 1) {
                   foreach($contacts as $contact) {
-                    //self::sendSMS($contact, $msg);
+                    self::sendSMS($contact, $msg);
                     error_log("[FIRST] [MULTIPLE] [OUT] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                     Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                   }
@@ -134,7 +134,7 @@ class SMS {
 							foreach($numbers as $number) {
 								$msg = $nr["fname"]." has passed the entrance gate at ".$n->format("Y-m-d H:i:sA");
 								error_log("[SECOND] [IN] [".$nr["idnumber"]."] Sending SMS to ".$number);
-								//self::sendSMS($msg, $number);
+								self::sendSMS($msg, $number);
 							}
 						}
 	   	     		    		break;
@@ -181,7 +181,7 @@ class SMS {
 							foreach($numbers as $number) {
 								$msg = $nr["fname"]." has passed the entrance gate at ".$n->format("Y-m-d H:i:sA");
 								error_log("[SECOND] [OUT] [".$nr["idnumber"]."] Sending SMS to ".$number);
-								//self::sendSMS($msg, $number);
+								self::sendSMS($msg, $number);
 							}
 						}
 	   	     		    		break;
@@ -273,11 +273,8 @@ class SMS {
 }
 set_time_limit(60);
 for($i = 0; $i <= 59; ++$i) {
-	if($i == 0)
-		error_log("CHECKING FOR SMS QUEUE");
-	if($i == 30)
-		error_log("CHECKING FOR SMS QUEUE");
-
-  SMS::Sender();
-  sleep(1);
+    for($j = 0; $j <= 5; $j++){
+        SMS::Sender();
+    }
+    sleep(1);
 }

@@ -39,6 +39,15 @@
     // $menu .= "<span>Logout</span>";
     // $menu .= "</div>";
 
+    $menu .= "<div class=\"dropdown\">";
+    $menu .= "<span><a href=\"".Core\Registry::get("config/url/base")."logs/\">Logs</a></span>";
+    $menu .= '</div>';
+
+    // $menu .= "<div class=\"dropdown\">";
+    // $menu .= "<span>Logout</span>";
+    // $menu .= "</div>";
+
+
     $menu .= "<div class='schoolYear' data-script='schoolYear'>";
 
     if(!isset($_SESSION["term"])) {

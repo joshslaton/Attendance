@@ -52,6 +52,11 @@ if(is_file($bootstrapFile) && file_exists($bootstrapFile)) {
     function() { Pages::getContents(dirname(__FILE__) . "/views/reports.php", True); }
   );
 
+  Router::addRoute(
+    '/logs/',
+    function () { Pages::getContents(dirname(__FILE__) . "/views/logs.php", True); }
+  );
+
 
   // ----------------------------------MODULES------------------------------- //
   Router::addRoute(
