@@ -29,7 +29,6 @@ class SMS {
         if(count($in_records) > 0) {
             $prevRecord = "";
             foreach($in_records as $idnumber) {
-                // $attendance_entry = Core\db::query(array("SELECT * from proj_attendance WHERE gate = \"in\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\" AND idnumber = ".$idnumber["idnumber"]));
                 $attendance_entry = Core\db::query(
                     array(
                         "SELECT " . 
@@ -58,6 +57,7 @@ class SMS {
                     );
 
                     if(self::isValid($toCheck)) {
+                        print_r($ae); echo "<br>";
                         if($i == 0) {
                             // print_r($ae); echo "<br>";
                             if($ae["isSent"] == 0) {
@@ -72,25 +72,27 @@ class SMS {
                                     error_log("[IN] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                     Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                                 }
-                            }else {
-                                $prevRecord = $ae;
                             }
                         }else if($i > 0) {
-                            if($prevRecord["idnumber"] == $ae["idnumber"]) {
-                                $prevTimeRecord = new DateTime($prevRecord["time"]);
-                                $nextTimeRecord = new DateTime($ae["time"]);
-                                $diffTimeRecord = $nextTimeRecord->diff($prevTimeRecord);
-                                if(intval($diffTimeRecord->format("%h")) >= 1) {
-                                    $prevRecord = $ae;
-                                    //print_r($ae); echo "<br>";
-                                    $n = $ae["fname"];
-                                    $contacts = $ae["contact"];
-                                    $contacts = explode(";", $contacts);
-                                    $msg = "$n has passed the entrance gate at ".$ae["time"];
-                                    foreach($contacts as $contact) {
-                                        // self::sendSMS($contact, $msg);
-                                        error_log("[IN] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
-                                        Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
+                            if($prevRecord != "") {
+                                if($prevRecord["idnumber"] == $ae["idnumber"]) {
+                                    print_r($prevRecord); echo "<br>";
+                                    $prevTimeRecord = new DateTime($prevRecord["time"]);
+                                    $nextTimeRecord = new DateTime($ae["time"]);
+                                    $diffTimeRecord = $nextTimeRecord->diff($prevTimeRecord);
+                                    if(intval($diffTimeRecord->format("%h")) >= 1) {
+                                        $prevRecord = $ae;
+                                        print_r($ae); echo "<br>";
+                                        $n = $ae["fname"];
+                                        $contacts = $ae["contact"];
+                                        $contacts = explode(";", $contacts);
+                                        $msg = "$n has passed the entrance gate at ".$ae["time"];
+                                        foreach($contacts as $contact) {
+                                            //print_r($ae); echo "<br>";
+                                            // self::sendSMS($contact, $msg);
+                                            error_log("[IN] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
+                                            Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
+                                        }
                                     }
                                 }
                             }
@@ -114,7 +116,6 @@ class SMS {
         if(count($out_records) > 0) {
             $prevRecord = "";
             foreach($out_records as $idnumber) {
-                // $attendance_entry = Core\db::query(array("SELECT * from proj_attendance WHERE gate = \"in\" AND time BETWEEN \"$startDate 00:00:00\" AND \"$endDate 23:59:59\" AND idnumber = ".$idnumber["idnumber"]));
                 $attendance_entry = Core\db::query(
                     array(
                         "SELECT " . 
@@ -143,6 +144,7 @@ class SMS {
                     );
 
                     if(self::isValid($toCheck)) {
+                        print_r($ae); echo "<br>";
                         if($i == 0) {
                             // print_r($ae); echo "<br>";
                             if($ae["isSent"] == 0) {
@@ -151,31 +153,33 @@ class SMS {
                                 $n = $ae["fname"];
                                 $contacts = $ae["contact"];
                                 $contacts = explode(";", $contacts);
-                                $msg = "$n has passed the exit gate at ".$ae["time"];
+                                $msg = "$n has passed the entrance gate at ".$ae["time"];
                                 foreach($contacts as $contact) {
                                     // self::sendSMS($contact, $msg);
                                     error_log("[OUT] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                     Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                                 }
-                            }else {
-                                $prevRecord = $ae;
                             }
                         }else if($i > 0) {
-                            if($prevRecord["idnumber"] == $ae["idnumber"]) {
-                                $prevTimeRecord = new DateTime($prevRecord["time"]);
-                                $nextTimeRecord = new DateTime($ae["time"]);
-                                $diffTimeRecord = $nextTimeRecord->diff($prevTimeRecord);
-                                if(intval($diffTimeRecord->format("%h")) >= 1) {
-                                    $prevRecord = $ae;
-                                    //print_r($ae); echo "<br>";
-                                    $n = $ae["fname"];
-                                    $contacts = $ae["contact"];
-                                    $contacts = explode(";", $contacts);
-                                    $msg = "$n has passed the exit gate at ".$ae["time"];
-                                    foreach($contacts as $contact) {
-                                        // self::sendSMS($contact, $msg);
-                                        error_log("[OUT] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
-                                        Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
+                            if($prevRecord != "") {
+                                if($prevRecord["idnumber"] == $ae["idnumber"]) {
+                                    print_r($prevRecord); echo "<br>";
+                                    $prevTimeRecord = new DateTime($prevRecord["time"]);
+                                    $nextTimeRecord = new DateTime($ae["time"]);
+                                    $diffTimeRecord = $nextTimeRecord->diff($prevTimeRecord);
+                                    if(intval($diffTimeRecord->format("%h")) >= 1) {
+                                        $prevRecord = $ae;
+                                        print_r($ae); echo "<br>";
+                                        $n = $ae["fname"];
+                                        $contacts = $ae["contact"];
+                                        $contacts = explode(";", $contacts);
+                                        $msg = "$n has passed the entrance gate at ".$ae["time"];
+                                        foreach($contacts as $contact) {
+                                            //print_r($ae); echo "<br>";
+                                            // self::sendSMS($contact, $msg);
+                                            error_log("[OUT] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
+                                            Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
+                                        }
                                     }
                                 }
                             }
