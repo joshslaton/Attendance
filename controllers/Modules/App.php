@@ -12,8 +12,8 @@ class SMS {
         $startDate = $dateNow->format("Y-m-d");
         $endDate = $dateNow->modify("+1 day")->format("Y-m-d");
         $counter = 0;
-        $startDate = "2019-09-12";
-        $endDate = "2019-09-12";
+        // $startDate = "2019-09-12";
+        // $endDate = "2019-09-12";
         // Take only the records for today, IDs that have length between 3 and 7
         
         $in_records = Core\db::query(
@@ -57,7 +57,7 @@ class SMS {
                     );
 
                     if(self::isValid($toCheck)) {
-                        print_r($ae); echo "<br>";
+                        // print_r($ae); echo "<br>";
                         if($i == 0) {
                             // print_r($ae); echo "<br>";
                             if($ae["isSent"] == 0) {
@@ -68,7 +68,7 @@ class SMS {
                                 $contacts = explode(";", $contacts);
                                 $msg = "$n has passed the entrance gate at ".$ae["time"];
                                 foreach($contacts as $contact) {
-                                    // self::sendSMS($contact, $msg);
+                                    self::sendSMS($contact, $msg);
                                     error_log("[IN] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                     Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                                 }
@@ -76,7 +76,7 @@ class SMS {
                         }else if($i > 0) {
                             if($prevRecord != "") {
                                 if($prevRecord["idnumber"] == $ae["idnumber"]) {
-                                    print_r($prevRecord); echo "<br>";
+                                    // print_r($prevRecord); echo "<br>";
                                     $prevTimeRecord = new DateTime($prevRecord["time"]);
                                     $nextTimeRecord = new DateTime($ae["time"]);
                                     $diffTimeRecord = $nextTimeRecord->diff($prevTimeRecord);
@@ -89,7 +89,7 @@ class SMS {
                                         $msg = "$n has passed the entrance gate at ".$ae["time"];
                                         foreach($contacts as $contact) {
                                             //print_r($ae); echo "<br>";
-                                            // self::sendSMS($contact, $msg);
+                                            self::sendSMS($contact, $msg);
                                             error_log("[IN] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                             Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                                         }
@@ -155,7 +155,7 @@ class SMS {
                                 $contacts = explode(";", $contacts);
                                 $msg = "$n has passed the entrance gate at ".$ae["time"];
                                 foreach($contacts as $contact) {
-                                    // self::sendSMS($contact, $msg);
+                                    self::sendSMS($contact, $msg);
                                     error_log("[OUT] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                     Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                                 }
@@ -163,7 +163,7 @@ class SMS {
                         }else if($i > 0) {
                             if($prevRecord != "") {
                                 if($prevRecord["idnumber"] == $ae["idnumber"]) {
-                                    print_r($prevRecord); echo "<br>";
+                                    // print_r($prevRecord); echo "<br>";
                                     $prevTimeRecord = new DateTime($prevRecord["time"]);
                                     $nextTimeRecord = new DateTime($ae["time"]);
                                     $diffTimeRecord = $nextTimeRecord->diff($prevTimeRecord);
@@ -176,7 +176,7 @@ class SMS {
                                         $msg = "$n has passed the entrance gate at ".$ae["time"];
                                         foreach($contacts as $contact) {
                                             //print_r($ae); echo "<br>";
-                                            // self::sendSMS($contact, $msg);
+                                            self::sendSMS($contact, $msg);
                                             error_log("[OUT] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                             Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                                         }
