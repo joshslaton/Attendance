@@ -316,3 +316,19 @@ table {
   padding: 3px;
   font-size: 0.9em;
 }
+
+
+/* ----- logs.php ----- */
+.ga-title {
+  margin: 5px;
+  padding: 10px;
+  border: 1px solid green;
+  border-radius: 10px;
+  /* color: white; */
+  /* font-weight: bold; */
+  /* background-color: green; */
+}
+
+.ga-title > div{
+  display: none;
+}

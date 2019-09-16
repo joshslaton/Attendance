@@ -541,3 +541,18 @@ function schoolYear() {
     })
   })
 }
+
+function grade_attendance() {
+  var ga = $(".page-content").find(".ga-title");
+  ga.each( function() {
+    $(this).on("click", function() {
+      // if($(this).find(".ga-content").css("display") == "none")
+      var gac = $(this).find(".ga-content");
+      if(gac.css("display") == "none") {
+        gac.css("display", "block");
+      }else {
+        gac.css("display", "none");
+      }
+    })
+  })
+}
