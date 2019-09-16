@@ -22,7 +22,7 @@ $config['dir']['plugins'] = $config['dir']['root'] . DIRECTORY_SEPARATOR . 'plug
 
 $config['database'] = array(
   'host' => 'localhost',
-  'username' => 'root',
+  'username' => 'gatekeeper',
   'password' => 'esxivmware',
   'database' => 'proj_gatekeeper',
   'studentdb' => 'proj_student2'
