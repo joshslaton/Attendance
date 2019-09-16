@@ -66,9 +66,12 @@ class SMS {
                                 $n = $ae["fname"];
                                 $contacts = $ae["contact"];
                                 $contacts = explode(";", $contacts);
-                                $msg = "$n has passed the entrance gate at ".$ae["time"];
+                                $t = new DateTime($ae["time"]);
+                                $t = $t->format("Y-m-d h:i:sA");
+                                $msg = "$n has passed the entrance gate at ".$t;
                                 foreach($contacts as $contact) {
                                     self::sendSMS($contact, $msg);
+                                    //print_r("[IN] [".$idnumber["idnumber"]."] Sending SMS to ".$contact); echo "<br>";
                                     error_log("[IN] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                     Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                                 }
@@ -82,15 +85,17 @@ class SMS {
                                     $diffTimeRecord = $nextTimeRecord->diff($prevTimeRecord);
                                     if(intval($diffTimeRecord->format("%h")) >= 1) {
                                         $prevRecord = $ae;
-                                        print_r($ae); echo "<br>";
+                                        //print_r($ae); echo "<br>";
                                         $n = $ae["fname"];
+                                        $t = new DateTime($ae["time"]);
+                                        $t = $t->format("Y-m-d h:i:sA");
                                         $contacts = $ae["contact"];
                                         $contacts = explode(";", $contacts);
-                                        $msg = "$n has passed the entrance gate at ".$ae["time"];
+                                        $msg = "$n has passed the entrance gate at ".$t;
                                         foreach($contacts as $contact) {
                                             //print_r($ae); echo "<br>";
                                             self::sendSMS($contact, $msg);
-                                            error_log("[IN] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
+                                            error_log("[IN2] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                             Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                                         }
                                     }
@@ -144,7 +149,7 @@ class SMS {
                     );
 
                     if(self::isValid($toCheck)) {
-                        print_r($ae); echo "<br>";
+                        //print_r($ae); echo "<br>";
                         if($i == 0) {
                             // print_r($ae); echo "<br>";
                             if($ae["isSent"] == 0) {
@@ -153,7 +158,9 @@ class SMS {
                                 $n = $ae["fname"];
                                 $contacts = $ae["contact"];
                                 $contacts = explode(";", $contacts);
-                                $msg = "$n has passed the entrance gate at ".$ae["time"];
+                                $t = new DateTime($ae["time"]);
+                                $t = $t->format("Y-m-d h:i:sA");
+                                $msg = "$n has passed the entrance gate at ".$t;
                                 foreach($contacts as $contact) {
                                     self::sendSMS($contact, $msg);
                                     error_log("[OUT] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
@@ -169,15 +176,17 @@ class SMS {
                                     $diffTimeRecord = $nextTimeRecord->diff($prevTimeRecord);
                                     if(intval($diffTimeRecord->format("%h")) >= 1) {
                                         $prevRecord = $ae;
-                                        print_r($ae); echo "<br>";
+                                        //print_r($ae); echo "<br>";
                                         $n = $ae["fname"];
                                         $contacts = $ae["contact"];
-                                        $contacts = explode(";", $contacts);
-                                        $msg = "$n has passed the entrance gate at ".$ae["time"];
+                                        $contacts = explode(";", $caontacts);
+                                        $t = new DateTime($ae["time"]);
+                                        $t = $t->format("Y-m-d h:i:sA");
+                                        $msg = "$n has passed the entrance gate at ".$t;
                                         foreach($contacts as $contact) {
                                             //print_r($ae); echo "<br>";
                                             self::sendSMS($contact, $msg);
-                                            error_log("[OUT] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
+                                            error_log("[OUT2] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                             Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                                         }
                                     }
@@ -194,7 +203,7 @@ class SMS {
 
     // TODO: Send maximum of 200 messages in a minute
     public static function sendSMS($number,$message,$params=array()){
-        error_log("Sending....");
+        // error_log("Sending....");
         $number = self::cleanNumber($number);
         $curl = curl_init();
         $data = array(
@@ -281,8 +290,8 @@ class SMS {
     }
 
 }
-//set_time_limit(60);
-//for($i = 0; $i <= 59; ++$i) {
+set_time_limit(60);
+for($i = 0; $i <= 59; ++$i) {
     SMS::Sender();
-//    sleep(1);
-//}
+    sleep(1);
+}
