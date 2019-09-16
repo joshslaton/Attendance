@@ -3,7 +3,7 @@ $d = new DateTime();
 $d = $d->format("Y-m-d");
 
 // $yearlevels = Core\db::query(array("SELECT DISTINCT ylevel FROM proj_student2 WHERE ylevel NOT IN (\"FACULTY\", \"STAFF\")"));
-$yearlevels = Core\db::query(array("SELECT DISTINCT ylevel FROM proj_student2"));
+$yearlevels = Core\db::query(array("SELECT DISTINCT ylevel FROM proj_student2 WHERE ylevel NOT IN (\"STAFF\", \"FACULTY\")"));
 $html = "";
 $html .= "<div class=\"page-content\" style=\"width: 100%; height: calc(100% - 34px);\" data-script=\"grade_attendance\">";
 // $html .= "<h4>Date: $d</h4>";
@@ -28,14 +28,23 @@ foreach($yearlevels as $yl) {
         );
         $total = count($withAttendance) + count($withoutAttendance);
         $ave = (count($withAttendance) / $total) * 100;
+        
         $html .= "<div class=\"ga-title\">";
-        $html .= "<h4>" . $yl["ylevel"] . " (" . round($ave, 2) . "%)</h4>";
-        $html .= "<div class=\"ga-content\">";
-        $html .= "<p><b>Without Attendance (".count($withoutAttendance).")</b></p>";
-        foreach($withoutAttendance as $w) {
-            $html .= "<p>" . $w["idnumber"] . " - " . $w["name"] . "</p>";
-        }
-        $html .= "</div>";
+            $html .= "<h4>" . $yl["ylevel"] . " (" . round($ave, 2) . "%) - ".count($withAttendance)."/".$total."</h4>";
+            // With Attendance
+            $html .= "<div class=\"ga-content\">";
+            $html .= "<p><b>With Attendance (".count($withAttendance).")</b></p>";
+            foreach($withAttendance as $w) {
+                $html .= "<p>" . $w["idnumber"] . " - " . $w["name"] . "</p>";
+            }
+            $html .= "</div>";
+            // Without Attendance
+            $html .= "<div class=\"ga-content\">";
+            $html .= "<p><b>Without Attendance (".count($withoutAttendance).")</b></p>";
+            foreach($withoutAttendance as $w) {
+                $html .= "<p>" . $w["idnumber"] . " - " . $w["name"] . "</p>";
+            }
+            $html .= "</div>";
 
     $html .= "</div>";
 }

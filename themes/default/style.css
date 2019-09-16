@@ -331,4 +331,6 @@ table {
 
 .ga-title > div{
   display: none;
+  vertical-align: text-top;
+  margin-left: 20px;
 }

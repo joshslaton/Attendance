@@ -549,7 +549,7 @@ function grade_attendance() {
       // if($(this).find(".ga-content").css("display") == "none")
       var gac = $(this).find(".ga-content");
       if(gac.css("display") == "none") {
-        gac.css("display", "block");
+        gac.css("display", "inline-block");
       }else {
         gac.css("display", "none");
       }
