@@ -70,7 +70,7 @@ class SMS {
                                 $t = $t->format("Y-m-d h:i:sA");
                                 $msg = "$n has passed the entrance gate at ".$t;
                                 foreach($contacts as $contact) {
-                                    self::sendSMS($contact, $msg);
+                                    self::sendSMS($idnumber, $contact, $msg);
                                     //print_r("[IN] [".$idnumber["idnumber"]."] Sending SMS to ".$contact); echo "<br>";
                                     error_log("[IN] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                     Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
@@ -94,7 +94,7 @@ class SMS {
                                         $msg = "$n has passed the entrance gate at ".$t;
                                         foreach($contacts as $contact) {
                                             //print_r($ae); echo "<br>";
-                                            self::sendSMS($contact, $msg);
+                                            self::sendSMS($idnumber, $contact, $msg);
                                             error_log("[IN2] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                             Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                                         }
@@ -160,9 +160,9 @@ class SMS {
                                 $contacts = explode(";", $contacts);
                                 $t = new DateTime($ae["time"]);
                                 $t = $t->format("Y-m-d h:i:sA");
-                                $msg = "$n has passed the entrance gate at ".$t;
+                                $msg = "$n has passed the exit gate at ".$t;
                                 foreach($contacts as $contact) {
-                                    self::sendSMS($contact, $msg);
+                                    self::sendSMS($idnumber, $contact, $msg);
                                     error_log("[OUT] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                     Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                                 }
@@ -182,10 +182,10 @@ class SMS {
                                         $contacts = explode(";", $caontacts);
                                         $t = new DateTime($ae["time"]);
                                         $t = $t->format("Y-m-d h:i:sA");
-                                        $msg = "$n has passed the entrance gate at ".$t;
+                                        $msg = "$n has passed the exit gate at ".$t;
                                         foreach($contacts as $contact) {
                                             //print_r($ae); echo "<br>";
-                                            self::sendSMS($contact, $msg);
+                                            self::sendSMS($idnumber, $contact, $msg);
                                             error_log("[OUT2] [".$idnumber["idnumber"]."] Sending SMS to ".$contact);
                                             Core\db::query(array("UPDATE proj_attendance SET isSent=\"1\" WHERE `id` = ?", array($ae["id"])));
                                         }
@@ -202,8 +202,9 @@ class SMS {
 
 
     // TODO: Send maximum of 200 messages in a minute
-    public static function sendSMS($number,$message,$params=array()){
-        // error_log("Sending....");
+    public static function sendSMS($idnumber, $number,$message,$params=array()){
+	    // error_log("Sending....");
+	//print_r("[".$idnumber["idnumber"]."] $number - $message<br>");
         $number = self::cleanNumber($number);
         $curl = curl_init();
         $data = array(
@@ -229,12 +230,12 @@ class SMS {
         $error = curl_error($curl);
         curl_close($curl);
 
-        var_dump(array(
-            'response' => strpos($response,"{")!==false
-            ? json_decode($response)
-            : $response,
-            'error' => $error
-        ));
+        // var_dump(array(
+        //     'response' => strpos($response,"{")!==false
+        //     ? json_decode($response)
+        //     : $response,
+        //     'error' => $error
+        // ));
 
         return array(
             'response' => strpos($response,"{")!==false
