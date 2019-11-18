@@ -42,8 +42,8 @@ class Attendance {
     $query_records_of_student =  "" .
       "SELECT * FROM proj_attendance " .
       "WHERE " .
-      // "time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\" AND " .
-      "month(time) = 11 AND " .
+      "time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\" AND " .
+      // "month(time) = 11 AND " .
       "idnumber IN (SELECT idnumber FROM proj_student2)";
 
     $results = DB::query(array($query_records_of_student));
@@ -60,7 +60,9 @@ class Attendance {
       "SELECT * FROM proj_attendance " .
       "WHERE " .
       "idnumber IN (SELECT idnumber FROM proj_student2) AND " .
-      "isEval = 0 and month(time) = 11 LIMIT 5000";
+      // "isEval = 0 and month(time) = 11 LIMIT 5000";
+      "isEval = 0 AND " .
+      "time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\"";
 
     $results = DB::query(array($query_records_of_student));
     return $results;
@@ -91,30 +93,14 @@ class Attendance {
     $query_last_record_of_student =  "" .
       "SELECT * FROM proj_attendance " .
       "WHERE " .
-      // "time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\" AND " .
+      "time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\" AND " .
       "idnumber = $idnumber AND " .
       "isSent = 1 AND " .
       "gate = ? AND " .
-      "month(time) = 11 " .
+      // "month(time) = 11 " .
       "ORDER BY id DESC LIMIT 1";
 
     $results = DB::query(array($query_last_record_of_student, array($gate)));
-    return $results;
-  }
-
-  function query_record_of_student($idnumber, $month) {
-    $d = new DateTime();
-    $y = $d->format("Y");
-    $m = $d->format("m");
-    $d = $d->format("d");
-
-    $query_record_of_student =  "" .
-      "SELECT * FROM proj_attendance " .
-      "WHERE " .
-      "MONTH(time) = $month AND " .
-      "idnumber = $idnumber AND " .
-      "isSent = 1";
-    $results = DB::query(array($query_record_of_student));
     return $results;
   }
 }
