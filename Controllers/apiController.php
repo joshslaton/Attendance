@@ -59,39 +59,44 @@ class apiController extends Controller{
   }
 
   function sender() {
-    $d = new DateTime();
-    include("../Models/Attendance.php");
-    $attendance  = new Attendance();
-    $record_to_send = $attendance->query_record_to_send();
-    foreach($record_to_send as $r) {
-      // within before the hour
-      $current = new DateTime($r["time"]);
-      $diff = $current->diff($d);
-      if(intval($diff->format("%h") <= 1)) {
-        if($r["contact"] != "") {
-          $contact = explode(";", $r["contact"]);
-          if(count($contact) > 1) {
-            foreach($contact as $c) {
-              if(self::numberonly($c) && self::isMobileNumber($c)) {
-                $number = self::cleanNumber($c);
+    set_time_limit(60);
+    for ($i = 0; $i < 59; ++$i) {
+      $d = new DateTime();
+      include_once("../Models/Attendance.php");
+      $attendance  = new Attendance();
+      $record_to_send = $attendance->query_record_to_send();
+      foreach($record_to_send as $r) {
+        // within before the hour
+        $current = new DateTime($r["time"]);
+        $diff = $current->diffev($d);
+        if(intval($diff->format("%h") <= 1)) {
+          if($r["contact"] != "") {
+            $contact = explode(";", $r["contact"]);
+            if(count($contact) > 1) {
+              foreach($contact as $c) {
+                if(self::numberonly($c) && self::isMobileNumber($c)) {
+                  $number = self::cleanNumber($c);
+                  $gate = $r["gate"] == "in" ? "entrance" : "exit";
+                  $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
+                  self::sendSMS($r["idnumber"], $msg, $number);
+                }
+              }
+            }else {
+              if(self::numberonly($r["contact"]) && self::isMobileNumber($r["contact"])) {
+                $number = self::cleanNumber($r["contact"]);
                 $gate = $r["gate"] == "in" ? "entrance" : "exit";
                 $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
                 self::sendSMS($r["idnumber"], $msg, $number);
               }
             }
-          }else {
-            if(self::numberonly($r["contact"]) && self::isMobileNumber($r["contact"])) {
-              $number = self::cleanNumber($r["contact"]);
-              $gate = $r["gate"] == "in" ? "entrance" : "exit";
-              $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
-              self::sendSMS($r["idnumber"], $msg, $number);
-            }
           }
+          $attendance->update_record($r["id"], array("isSent = 2"));
         }
-        $attendance->update_record($r["id"], array("isSent = 2"));
       }
+      sleep(1);
     }
   }
+
   private function createTableFromArray($arr) {
     echo "<table class=\"table table-sm\">";
     foreach($arr as $i => $tr) {
