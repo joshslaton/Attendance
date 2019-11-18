@@ -57,13 +57,23 @@ class Attendance {
     $d = $d->format("d");
 
     $query_records_of_student =  "" .
-      "SELECT * FROM proj_attendance " .
+      "SELECT " .
+      "proj_attendance.id, " .
+      "proj_student2.idnumber, " .
+      "proj_student2.fname, " .
+      "proj_student2.contact, " .
+      "proj_attendance.gate, " .
+      "proj_attendance.isSent, " .
+      "proj_attendance.isEval, " .
+      "proj_attendance.time " .
+      "FROM proj_attendance " .
+      "LEFT JOIN proj_student2 " .
+      "ON proj_attendance.idnumber = proj_student2.idnumber " .
       "WHERE " .
-      "idnumber IN (SELECT idnumber FROM proj_student2) AND " .
+      "proj_attendance.idnumber IN (SELECT idnumber FROM proj_student2) AND " .
       // "isEval = 0 and month(time) = 11 LIMIT 5000";
-      "isEval = 0 AND " .
-      "time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\"";
-
+      "proj_attendance.isEval = 0 AND " .
+      "proj_attendance.time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\" LIMIT 200";
     $results = DB::query(array($query_records_of_student));
     return $results;
   }
@@ -94,13 +104,40 @@ class Attendance {
       "SELECT * FROM proj_attendance " .
       "WHERE " .
       "time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\" AND " .
-      "idnumber = $idnumber AND " .
+      "idnumber = \"$idnumber\" AND " .
       "isSent = 1 AND " .
-      "gate = ? AND " .
+      "gate = \"$gate\" " .
       // "month(time) = 11 " .
       "ORDER BY id DESC LIMIT 1";
+    // print_r($query_last_record_of_student); echo "<br>";
+    $results = DB::query(array($query_last_record_of_student));
+    return $results;
+  }
 
-    $results = DB::query(array($query_last_record_of_student, array($gate)));
+  function query_record_to_send() {
+    $d = new DateTime();
+    $y = $d->format("Y");
+    $m = $d->format("m");
+    $d = $d->format("d");
+
+    $query_record_to_send =  "" .
+      "SELECT " .
+      "proj_attendance.id, " .
+      "proj_student2.idnumber, " .
+      "proj_student2.fname, " .
+      "proj_student2.contact, " .
+      "proj_attendance.gate, " .
+      "proj_attendance.isSent, " .
+      "proj_attendance.isEval, " .
+      "proj_attendance.time " .
+      "FROM proj_attendance " .
+      "LEFT JOIN proj_student2 " .
+      "ON proj_attendance.idnumber = proj_student2.idnumber " .
+      "WHERE " .
+      "proj_attendance.idnumber IN (SELECT idnumber FROM proj_student2) AND " .
+      "proj_attendance.isSent = 1 AND " .
+      "proj_attendance.time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\" LIMIT 200";
+    $results = DB::query(array($query_record_to_send));
     return $results;
   }
 }
