@@ -59,72 +59,84 @@ class apiController extends Controller{
   }
 
   function sender() {
-    set_time_limit(60);
-    for ($i = 0; $i < 59; ++$i) {
-      $d = new DateTime();
-      include_once("../Models/Attendance.php");
-      $attendance  = new Attendance();
-      $record_to_send = $attendance->query_record_to_send();
-      foreach($record_to_send as $r) {
-        // within before the hour
-        $current = new DateTime($r["time"]);
-        $diff = $current->diffev($d);
-        if(intval($diff->format("%h") <= 1)) {
-          if($r["contact"] != "") {
-            $contact = explode(";", $r["contact"]);
-            if(count($contact) > 1) {
-              foreach($contact as $c) {
-                if(self::numberonly($c) && self::isMobileNumber($c)) {
-                  $number = self::cleanNumber($c);
+    //set_time_limit(60);
+        //for($t = 0; $t <= 59; $t++) {
+        $d = new DateTime();
+        include_once("../Models/Attendance.php");
+        $attendance  = new Attendance();
+        $record_to_send = $attendance->query_record_to_send();
+        foreach($record_to_send as $r) {
+          // within before the hour
+          $current = new DateTime($r["time"]);
+          $diff = $current->diff($d);
+          echo $r["id"] . " " . $current->format("Y-m-d h:i:s A") . " - " . $d->format("Y-m-d h:i:s A") . "<br>";
+          if(intval($diff->format("%h") <= 1)) {
+            if($r["contact"] != "") {
+              $contact = explode(";", $r["contact"]);
+              if(count($contact) > 1) {
+                foreach($contact as $c) {
+                  if(self::numberonly($c) && self::isMobileNumber($c)) {
+                    $number = self::cleanNumber($c);
+                    $gate = $r["gate"] == "in" ? "entrance" : "exit";
+                    $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
+                    self::sendSMS($r["idnumber"], $number, $msg);
+                  }
+                }
+              }else {
+                if(self::numberonly($r["contact"]) && self::isMobileNumber($r["contact"])) {
+                  $number = self::cleanNumber($r["contact"]);
                   $gate = $r["gate"] == "in" ? "entrance" : "exit";
                   $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
-                  self::sendSMS($r["idnumber"], $msg, $number);
+                  self::sendSMS($r["idnumber"], $number, $msg);
                 }
               }
-            }else {
-              if(self::numberonly($r["contact"]) && self::isMobileNumber($r["contact"])) {
-                $number = self::cleanNumber($r["contact"]);
-                $gate = $r["gate"] == "in" ? "entrance" : "exit";
-                $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
-                self::sendSMS($r["idnumber"], $msg, $number);
-              }
             }
+            $attendance->update_record($r["id"], array("isSent = 2"));
+          }else {
+            $attendance->update_record($r["id"], array("isSent = 2"));
           }
-          $attendance->update_record($r["id"], array("isSent = 2"));
         }
-      }
-      sleep(1);
-    }
+        //sleep(1);
+    //}
   }
-
   private function createTableFromArray($arr) {
     echo "<table class=\"table table-sm\">";
     foreach($arr as $i => $tr) {
-      if($tr["isSent"] == 1) {
-        echo "<tr style=\"background-color: #00FF00;\">";
+      if($tr["isSent"] == 2) {
+        echo "<tr style=\"background-color: #80f2e3;\">";
         foreach($tr as $td) {
           if($td instanceof DateTime) {
-            echo "<td>" . $td->format("Y-m-d h:i:sa") . "</td>";
+            echo "<td>" . $td->format("Y-m-d h:i:s A") . "</td>";
           }else {
             echo "<td>" . $td ."<td>";
           }
         }
         echo "</tr>";
-      } elseif($tr["isEval"] == 1) {
-        echo "<tr style=\"background-color: #FFFF00;\">";
+      } elseif($tr["isSent"] == 1) {
+        echo "<tr style=\"background-color: #00FF00;\">";
         foreach($tr as $td) {
           if($td instanceof DateTime) {
-            echo "<td>" . $td->format("Y-m-d h:i:sa") . "</td>";
+            echo "<td>" . $td->format("Y-m-d h:i:s A") . "</td>";
           }else {
             echo "<td>" . $td ."<td>";
           }
         }
+      } elseif($tr["isEval"] == 1) {
+        echo "<tr style=\"background-color: #FFFF00;\">";
+        foreach($tr as $td) {
+          if($td instanceof DateTime) {
+            echo "<td>" . $td->format("Y-m-d h:i:s A") . "</td>";
+          }else {
+            echo "<td>" . $td ."<td>";
+          }
+        }
+        echo "</tr>";
         echo "</tr>";
       }else {
         echo "<tr>";
         foreach($tr as $td) {
           if($td instanceof DateTime) {
-            echo "<td>" . $td->format("Y-m-d h:i:sa") . "</td>";
+            echo "<td>" . $td->format("Y-m-d h:i:s A") . "</td>";
           }else {
             echo "<td>" . $td ."<td>";
           }
@@ -137,7 +149,7 @@ class apiController extends Controller{
 
   // TODO: Send maximum of 200 messages in a minute
   public static function sendSMS($idnumber, $number,$message,$params=array()){
-    // error_log("[".$idnumber."] $number - $message<br>");
+    error_log("[".$idnumber."] $number - $message<br>");
     // print_r("[".$idnumber."] $number - $message<br>");
     $number = self::cleanNumber($number);
     $curl = curl_init();
@@ -159,16 +171,15 @@ class apiController extends Controller{
       (http_build_query($data)),
     );
     curl_setopt_array($curl,$curlopt);
-    // $response = curl_exec($curl);
-    $response = "succ";
+    $response = curl_exec($curl);
     $error = curl_error($curl);
     curl_close($curl);
-    // var_dump(array(
-    //     'response' => strpos($response,"{")!==false
-    //     ? json_decode($response)
-    //     : $response,
-    //     'error' => $error
-    // ));
+     var_dump(array(
+         'response' => strpos($response,"{")!==false
+         ? json_decode($response)
+         : $response,
+         'error' => $error
+     ));
     return array(
       'response' => strpos($response,"{")!==false
         ? json_decode($response)

@@ -43,10 +43,20 @@ class Attendance {
       "SELECT * FROM proj_attendance " .
       "WHERE " .
       "time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\" AND " .
-      // "month(time) = 11 AND " .
+      "isEval = 1 AND " .
       "idnumber IN (SELECT idnumber FROM proj_student2)";
 
     $results = DB::query(array($query_records_of_student));
+
+    foreach($results as $index1 => $result) {
+        foreach($result as $key => $column) {
+            if($key == "time") {
+                $d = new DateTime($column);
+                $results[$index1][$key] = $d;
+            }
+        }
+    }
+    // echo "Records Sent: " . count($results) . "<br>";
     return $results;
   }
 
@@ -73,7 +83,7 @@ class Attendance {
       "proj_attendance.idnumber IN (SELECT idnumber FROM proj_student2) AND " .
       // "isEval = 0 and month(time) = 11 LIMIT 5000";
       "proj_attendance.isEval = 0 AND " .
-      "proj_attendance.time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\" LIMIT 200";
+      "proj_attendance.time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\"";
     $results = DB::query(array($query_records_of_student));
     return $results;
   }
@@ -136,8 +146,22 @@ class Attendance {
       "WHERE " .
       "proj_attendance.idnumber IN (SELECT idnumber FROM proj_student2) AND " .
       "proj_attendance.isSent = 1 AND " .
-      "proj_attendance.time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\" LIMIT 200";
+      "proj_attendance.time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\" LIMIT 180";
     $results = DB::query(array($query_record_to_send));
     return $results;
   }
+    function query_record_of_student($idnumber, $month) {
+      $d = new DateTime();
+      $y = $d->format("Y");
+      $m = $d->format("m");
+      $d = $d->format("d");
+      $query_record_of_student =  "" .
+        "SELECT * FROM proj_attendance " .
+        "WHERE " .
+        "MONTH(time) = $month AND " .
+        "idnumber = $idnumber AND " .
+        "isSent = 2";
+      $results = DB::query(array($query_record_of_student));
+      return $results;
+    }
 }
