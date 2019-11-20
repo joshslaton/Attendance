@@ -20,7 +20,8 @@ class apiController extends Controller{
       // print_r($r); echo "<br>";
       if(count($last_record) == 0) {
         $attendance->update_record($r["id"], array("isSent = 1", "isEval = 1"));
-      } else {
+      }
+      if(count($last_record) > 0) {
         // Check
         $last = new DateTime($last_record[0]["time"]);
         $current = new DateTime($r["time"]);
@@ -60,43 +61,43 @@ class apiController extends Controller{
 
   function sender() {
     //set_time_limit(60);
-        //for($t = 0; $t <= 59; $t++) {
-        $d = new DateTime();
-        include_once("../Models/Attendance.php");
-        $attendance  = new Attendance();
-        $record_to_send = $attendance->query_record_to_send();
-        foreach($record_to_send as $r) {
-          // within before the hour
-          $current = new DateTime($r["time"]);
-          $diff = $current->diff($d);
-          echo $r["id"] . " " . $current->format("Y-m-d h:i:s A") . " - " . $d->format("Y-m-d h:i:s A") . "<br>";
-          if(intval($diff->format("%h") <= 1)) {
-            if($r["contact"] != "") {
-              $contact = explode(";", $r["contact"]);
-              if(count($contact) > 1) {
-                foreach($contact as $c) {
-                  if(self::numberonly($c) && self::isMobileNumber($c)) {
-                    $number = self::cleanNumber($c);
-                    $gate = $r["gate"] == "in" ? "entrance" : "exit";
-                    $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
-                    self::sendSMS($r["idnumber"], $number, $msg);
-                  }
-                }
-              }else {
-                if(self::numberonly($r["contact"]) && self::isMobileNumber($r["contact"])) {
-                  $number = self::cleanNumber($r["contact"]);
-                  $gate = $r["gate"] == "in" ? "entrance" : "exit";
-                  $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
-                  self::sendSMS($r["idnumber"], $number, $msg);
-                }
+    //for($t = 0; $t <= 59; $t++) {
+    $d = new DateTime();
+    include_once("../Models/Attendance.php");
+    $attendance  = new Attendance();
+    $record_to_send = $attendance->query_record_to_send();
+    foreach($record_to_send as $r) {
+      // within before the hour
+      $current = new DateTime($r["time"]);
+      $diff = $current->diff($d);
+      echo $r["id"] . " " . $current->format("Y-m-d h:i:s A") . " - " . $d->format("Y-m-d h:i:s A") . "<br>";
+      if(intval($diff->format("%h") <= 1)) {
+        if($r["contact"] != "") {
+          $contact = explode(";", $r["contact"]);
+          if(count($contact) > 1) {
+            foreach($contact as $c) {
+              if(self::numberonly($c) && self::isMobileNumber($c)) {
+                $number = self::cleanNumber($c);
+                $gate = $r["gate"] == "in" ? "entrance" : "exit";
+                $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
+                self::sendSMS($r["idnumber"], $number, $msg);
               }
             }
-            $attendance->update_record($r["id"], array("isSent = 2"));
           }else {
-            $attendance->update_record($r["id"], array("isSent = 2"));
+            if(self::numberonly($r["contact"]) && self::isMobileNumber($r["contact"])) {
+              $number = self::cleanNumber($r["contact"]);
+              $gate = $r["gate"] == "in" ? "entrance" : "exit";
+              $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
+              self::sendSMS($r["idnumber"], $number, $msg);
+            }
           }
         }
-        //sleep(1);
+        $attendance->update_record($r["id"], array("isSent = 2"));
+      }else {
+        $attendance->update_record($r["id"], array("isSent = 2"));
+      }
+    }
+    //sleep(1);
     //}
   }
   private function createTableFromArray($arr) {
@@ -171,64 +172,65 @@ class apiController extends Controller{
       (http_build_query($data)),
     );
     curl_setopt_array($curl,$curlopt);
-    $response = curl_exec($curl);
+    $response = "nani";
+    // $response = curl_exec($curl);
     $error = curl_error($curl);
     curl_close($curl);
-     var_dump(array(
-         'response' => strpos($response,"{")!==false
-         ? json_decode($response)
-         : $response,
-         'error' => $error
-     ));
-    return array(
+    var_dump(array(
       'response' => strpos($response,"{")!==false
         ? json_decode($response)
         : $response,
         'error' => $error
-      );
-    }
-
-    public static function isMobileNumber($number){
-      return strlen($number)==10 || strlen($number)==11 || strlen($number)==12;
-    }
-
-    // Change 63 to 0.
-    public static function cleanNumber($number){
-      $number = self::numberonly($number, "digits");
-      $number = substr($number,0,3 == "630") ? "63".substr($number,3) : $number;
-      return strlen($number) == 10 ? "63".$number : $number;
-      //return strlen($number)==12 ?
-    }
-
-    private static function isSetParam($param, $paramArray=array()){
-      if(is_array($param)){
-        return in_array($param, $paramArray, true) || array_key_exists($param, $paramArray);
+      ));
+      return array(
+        'response' => strpos($response,"{")!==false
+          ? json_decode($response)
+          : $response,
+          'error' => $error
+        );
       }
-      return $param == $paramArray;
-    }
 
-    private static function numberonly($str, $params=array()){
-      if(is_array($str)){
-        $keys = array_keys($str);
-        $str = count($keys) <= 0 ? 0 : $str[$keys[0]];
+      public static function isMobileNumber($number){
+        return strlen($number)==10 || strlen($number)==11 || strlen($number)==12;
       }
-      $preg = self::isSetParam("digits", $params) ? "/[^0-9]/" : "/[^0-9\.\-]/"; // FALSE
-      $retstr = preg_replace($preg,"",$str);
-      $retstr = $retstr == '' ? 0 : $retstr;
-      return self::isSetParam('string',$params) ? $retstr."" : $retstr;
-    }
 
-    private static function isValid($arr) {
-      // echo "Checking: ".$arr["fname"];
-      // echo "Checking: ". $arr["fname"] . "<br>";
-      foreach($arr as $a) {
-        if(!$a == "") {
-          continue;
-        }else {
-          return false;
+      // Change 63 to 0.
+      public static function cleanNumber($number){
+        $number = self::numberonly($number, "digits");
+        $number = substr($number,0,3 == "630") ? "63".substr($number,3) : $number;
+        return strlen($number) == 10 ? "63".$number : $number;
+        //return strlen($number)==12 ?
+      }
+
+      private static function isSetParam($param, $paramArray=array()){
+        if(is_array($param)){
+          return in_array($param, $paramArray, true) || array_key_exists($param, $paramArray);
         }
+        return $param == $paramArray;
       }
-      return true;
-    }
 
-  }
+      private static function numberonly($str, $params=array()){
+        if(is_array($str)){
+          $keys = array_keys($str);
+          $str = count($keys) <= 0 ? 0 : $str[$keys[0]];
+        }
+        $preg = self::isSetParam("digits", $params) ? "/[^0-9]/" : "/[^0-9\.\-]/"; // FALSE
+        $retstr = preg_replace($preg,"",$str);
+        $retstr = $retstr == '' ? 0 : $retstr;
+        return self::isSetParam('string',$params) ? $retstr."" : $retstr;
+      }
+
+      private static function isValid($arr) {
+        // echo "Checking: ".$arr["fname"];
+        // echo "Checking: ". $arr["fname"] . "<br>";
+        foreach($arr as $a) {
+          if(!$a == "") {
+            continue;
+          }else {
+            return false;
+          }
+        }
+        return true;
+      }
+
+    }
