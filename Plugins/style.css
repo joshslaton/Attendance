@@ -1,7 +1,7 @@
 @font-face {
     font-family: 'Montserrat';
-    src: url('http://localhost/Plugins/fonts/Montserrat-Light.otf');
-    src: url('http://localhost/Plugins/fonts/Montserrat-Light.otf') format('opentype');
+    src: url('/Plugins/fonts/Montserrat-Light.otf');
+    src: url('/Plugins/fonts/Montserrat-Light.otf') format('opentype');
 }
 
 
