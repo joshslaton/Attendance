@@ -32,6 +32,14 @@
                 <div><a href="/student/modify/">Modify Student Info</a></div>
             </div>
         </div>
+        <div class="dropdown">
+            <span>Database</span>
+            <div class="dropdown-content">
+                <div class="menu-label"><a href="/database/">DB Management</a></div>
+                <hr>
+                <div><a href="/database/controls/">Controls</a></div>
+            </div>
+        </div>
     </div>
         <?php echo $content_for_layout; ?>
 </body>

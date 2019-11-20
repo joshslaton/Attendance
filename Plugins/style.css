@@ -95,8 +95,7 @@ table.form_addUser td:last-child{
 }
 
 .tableForm {
-  /* margin: auto 0;
-  width: 60% !important; */
+  margin: 0 auto;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 }
 /* Status */

@@ -12,7 +12,7 @@
                 }
             }
          ?>
-        <table class="table form_addUser tableForm">
+        <table class="table w-auto form_addUser tableForm" data-script="addUser">
             <thead>
             <tr><th colspan=2>Add User</th></tr>
             </thead>

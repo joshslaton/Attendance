@@ -84,28 +84,44 @@ class Student {
         }
     }
 
+    function exists($column, $val) {
+      $q = "SELECT * FROM proj_student2 WHERE " .
+          "$column = $val";
+      $results = DB::query(array($q));
+      if(count($results) > 0){
+          return $results;
+      }else {
+          return array();
+      }
+    }
+
     function update($id, $oldVal, $newVal, $column) {
         // Check if id exists.
-        $exists = $this->search($newVal);
-        if(count($exists) >= 1) {
-           return array("status" => "failed" ,"message" => "Failed: ID number $newVal exists!");
-        }else {
-          // USE ID
-          if($_POST["column"] == "idnumber") {
-            DB::query(array("UPDATE proj_student2 SET idnumber = \"$newVal\" WHERE id = ?", array($id)));
-            return array("status" => "success", "message" => "Changed $oldVal to $newVal success!");
-          }
-          if($_POST["column"] == "fname") {
-            DB::query(array("UPDATE proj_student2 SET fname = \"$newVal\" WHERE id = ?", array($id)));
-            return array("status" => "success", "message" => "Changed $oldVal to $newVal success!");
-          }
-          if($_POST["column"] == "mname") {
-            DB::query(array("UPDATE proj_student2 SET mname = \"$newVal\" WHERE id = ?", array($id)));
-            return array("status" => "success", "message" => "Changed $oldVal to $newVal success!");
-          }
-          if($_POST["column"] == "lname") {
-            DB::query(array("UPDATE proj_student2 SET lname = \"$newVal\" WHERE id = ?", array($id)));
-            return array("status" => "success", "message" => "Changed $oldVal to $newVal success!");
+        if($this->exists("id", $id)) {
+          if($column == "idnumber") { // ID Number
+            if($this->exists("idnumber", $newVal)) {
+              return array("status" => "failed" ,"message" => "Failed: ID number $newVal exists!");
+            }else {
+              DB::query(array("UPDATE proj_student2 SET idnumber = \"$newVal\" WHERE id = ?", array($id)));
+              return array("status" => "success", "message" => "Changed $oldVal to $newVal success!");
+            }
+          }else {
+            if($_POST["column"] == "fname") {
+              DB::query(array("UPDATE proj_student2 SET fname = \"$newVal\" WHERE id = ?", array($id)));
+              return array("status" => "success", "message" => "Changed $oldVal to $newVal success!");
+            }
+            if($_POST["column"] == "mname") {
+              DB::query(array("UPDATE proj_student2 SET mname = \"$newVal\" WHERE id = ?", array($id)));
+              return array("status" => "success", "message" => "Changed $oldVal to $newVal success!");
+            }
+            if($_POST["column"] == "lname") {
+              DB::query(array("UPDATE proj_student2 SET lname = \"$newVal\" WHERE id = ?", array($id)));
+              return array("status" => "success", "message" => "Changed $oldVal to $newVal success!");
+            }
+            if($_POST["column"] == "ylevel") {
+              DB::query(array("UPDATE proj_student2 SET ylevel = \"$newVal\" WHERE id = ?", array($id)));
+              return array("status" => "success", "message" => "Changed $oldVal to $newVal success!");
+            }
           }
         }
     }

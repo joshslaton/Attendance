@@ -161,6 +161,9 @@ function modifyStudent() {
         contact = $(this).val()
     })
   })
+
+  ylevel = t.find("select").val();
+
   t.find("input").each(function() {
     $(this).on("blur", function() {
       // ID Number
@@ -191,7 +194,21 @@ function modifyStudent() {
           ajaxRequest("post", "/student/update/", { "id": hidden, "oldVal": lname, "newVal": newVal, "column": $(this).attr("name") })
         }
       }
+      // Year Level
+      if($(this).attr("name") == "ylevel") {
+        if($(this).val() != lname && $(this).val() != "") {
+          var newVal = $(this).val();
+          ajaxRequest("post", "/student/update/", { "id": hidden, "oldVal": lname, "newVal": newVal, "column": $(this).attr("name") })
+        }
+      }
     })
+  })
+
+  t.find("select").on("change", function() {
+    if(ylevel != $(this).val()) {
+      var newVal = $(this).val();
+      ajaxRequest("post", "/student/update/", { "id": hidden, "oldVal": lname, "newVal": newVal, "column": $(this).attr("name") })
+    }
   })
 }
 
@@ -231,6 +248,7 @@ function ajaxRequest(type, url, data) {
     type: type,
     data: data,
     success: function(d) {
+      console.log(d)
       r = JSON.parse(d);
       r = r.result
       if(r.status == "success") {
@@ -246,4 +264,18 @@ function ajaxRequest(type, url, data) {
       }
     }
   });
+}
+
+function test() {
+  var r1 = $("#r1");
+  r1.on("click", function() {
+    $.ajax({
+      url: "/attendance/reset/",
+      type: "post",
+      data: { "key": "val" },
+      success: function(data) {
+        console.log(data)
+      }
+    })
+  })
 }

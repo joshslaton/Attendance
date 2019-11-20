@@ -26,4 +26,11 @@ class attendanceController extends Controller{
     }
     $this->renderNoMenu("view");
   }
+
+  function reset() {
+    include_once("../Models/Attendance.php");
+    $attendance = new Attendance();
+    $attendance->reset();
+
+  }
 }

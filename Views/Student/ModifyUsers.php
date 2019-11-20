@@ -6,12 +6,12 @@
     </form>
 </div>
 <?php
-if(isset($student)) {
+if(isset($student) && $student[0] != "") {
     $student = $student[0];
 ?>
 <div class="container">
     <div class="center">
-        <table id="modifyStudent" class="table tableForm" data-script="modifyStudent">
+        <table id="modifyStudent" class="table w-auto tableForm" data-script="modifyStudent">
             <thead>
             <tr><th colspan=2>Modify User</th></tr>
             </thead>
@@ -45,9 +45,15 @@ if(isset($student)) {
                     <td>
                         <select class="form-control" id="input_yearLevel"  name="ylevel">
                             <?php
+                            $select = "";
                             foreach($yearLevels as $yl) {
-                                echo "<option value=\"".$yl["ylevel"]."\">".$yl["ylevel"]."</option>";
+                              if($yl["ylevel"] == $student["ylevel"]) {
+                                $select .= "<option value=\"".$yl["ylevel"]."\" selected>".$yl["ylevel"]."</option>";
+                              }else {
+                                $select .= "<option value=\"".$yl["ylevel"]."\">".$yl["ylevel"]."</option>";
+                              }
                             }
+                            echo $select;
                             ?>
                         </select>
                     </td>

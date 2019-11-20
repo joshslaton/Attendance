@@ -18,6 +18,16 @@ class Attendance {
     // Do i need to log this ?
   }
 
+  function insertToHistory($idnumber, $contact, $message, $time_sent) {
+    // echo "$idnumber, $contact, $message, $time_sent<br>";
+    // Check if table exists
+    $q = "INSERT into proj_smshistory (idnumber, contact, message, time_sent) " .
+    "VALUES (\"$idnumber\", \"$contact\", \"$message\", \"$time_sent\")";
+    print_r($q); echo "<br>";
+    $command = db::query(array($q));
+    // Do i need to log this ?
+  }
+
   function update_record($id, $params = array()) {
     $q = "UPDATE proj_attendance SET ";
     foreach($params as $i => $v) {
@@ -150,18 +160,35 @@ class Attendance {
     $results = DB::query(array($query_record_to_send));
     return $results;
   }
-    function query_record_of_student($idnumber, $month) {
-      $d = new DateTime();
-      $y = $d->format("Y");
-      $m = $d->format("m");
-      $d = $d->format("d");
-      $query_record_of_student =  "" .
-        "SELECT * FROM proj_attendance " .
-        "WHERE " .
-        "MONTH(time) = $month AND " .
-        "idnumber = $idnumber AND " .
-        "isSent = 2";
-      $results = DB::query(array($query_record_of_student));
-      return $results;
-    }
+
+  function query_record_of_student($idnumber, $month) {
+    $d = new DateTime();
+    $y = $d->format("Y");
+    $m = $d->format("m");
+    $d = $d->format("d");
+    $query_record_of_student =  "" .
+      "SELECT * FROM proj_attendance " .
+      "WHERE " .
+      "MONTH(time) = $month AND " .
+      "idnumber = $idnumber AND " .
+      "isSent = 2";
+    $results = DB::query(array($query_record_of_student));
+    return $results;
+  }
+
+  function reset() {
+    $d = new DateTime();
+    $y = $d->format("Y");
+    $m = $d->format("m");
+    $d = $d->format("d");
+
+    $q = "" .
+      "UPDATE proj_attendance ".
+      "SET ".
+      "isSent = 0, isEval = 0 ".
+      "WHERE ".
+      "time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\"";
+
+    $results = DB::query(array($q));
+  }
 }
