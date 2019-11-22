@@ -65,7 +65,7 @@ class studentController extends Controller{
       }
     }
 
-    $this->render("ModifyUsers");
+    $this->render("modify");
   }
 
   function search() {

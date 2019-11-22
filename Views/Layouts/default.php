@@ -27,7 +27,7 @@
             <div class="dropdown-content">
                 <div class="menu-label"><a href="/student/">Student Management</a></div>
                 <hr>
-                <div><a href="/student/list/">List All Students</a></div>
+                <!-- <div><a href="/student/list/">List All Students</a></div> -->
                 <div><a href="/student/create/">Add Student</a></div>
                 <div><a href="/student/modify/">Modify Student Info</a></div>
             </div>

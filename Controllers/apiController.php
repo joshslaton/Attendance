@@ -6,70 +6,48 @@ class apiController extends Controller{
 
   }
 
-  function evaluate() {
+  function evaluate($data) {
+    include("../Models/DB.php");
     include("../Models/Attendance.php");
-    $attendance  = new Attendance();
-
-    // What are the records that is not evaluated yet
-    $records_to_check = $attendance->query_all_records();
-    $prev = array();
-
-    echo "Records to evaluate: " . count($records_to_check) . "<br>";
-    foreach($records_to_check as $index => $r) {
-      $last_record = $attendance->query_last_record_of_student($r["idnumber"], $r["gate"]);
-      // print_r($r); echo "<br>";
-      if(count($last_record) == 0) {
-        $attendance->update_record($r["id"], array("isSent = 1", "isEval = 1"));
-      }
-      if(count($last_record) > 0) {
-        // Check
-        $last = new DateTime($last_record[0]["time"]);
-        $current = new DateTime($r["time"]);
-        $diff = $last->diff($current);
-        if(intval($diff->format("%h")) >= 1) {
-          $attendance->update_record($r["id"], array("isSent = 1", "isEval = 1"));
-        }else {
-          $attendance->update_record($r["id"], array("isEval = 1"));
+    $a = new Attendance();
+    $r = $a->query_last_record($data["idnumber"], $data["gate"]);
+    if($r) {
+      $r = $r[0];
+      $now = new DateTime();
+      $inDB = new DateTime($r["time"]);
+      $diff = $data["time"]->diff($inDB);
+      if(intval($diff->format("%h")) >= 1) {
+        // Sender
+        if($r["contact"] != "") {
+          $contact = explode(";", $r["contact"]);
+          if(count($contact) > 1) {
+            foreach($contact as $c) {
+              if(self::numberonly($c) && self::isMobileNumber($c)) {
+                $number = self::cleanNumber($c);
+                $gate = $r["gate"] == "in" ? "entrance" : "exit";
+                $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
+                $attendance->insertToHistory($r["idnumber"], $number, $msg, $d->format("Y-m-d H:i:s"));
+                self::sendSMS($r["idnumber"], $number, $msg);
+              }
+            }
+          }else {
+            if(self::numberonly($r["contact"]) && self::isMobileNumber($r["contact"])) {
+              $number = self::cleanNumber($r["contact"]);
+              $gate = $r["gate"] == "in" ? "entrance" : "exit";
+              $msg = $r["fname"] . " has passed the $gate gate at " . $data["time"]->format("Y-m-d h:i:s A");
+              $a->insertToHistory($r["idnumber"], $number, $msg, $now->format("Y-m-d H:i:s"));
+              self::sendSMS($r["idnumber"], $number, $msg);
+            }
+          }
+        }
+        $a->insert($data["idnumber"], $data["gate"], $data["time"]->format("Y-m-d H:i:s"), $data["schoolYear"], 1, 1);
+      }else {
+        if(intval($diff->format("%i")) >= 1) {
+          $a->insert($data["idnumber"], $data["gate"], $data["time"]->format("Y-m-d H:i:s"), $data["schoolYear"], 1, 0);
         }
       }
-    }
-    // self::createTableFromArray($attendance->query_all_records_for_display());
-  }
-
-  function record($params="") {
-    $params = str_replace("?", "", $params);
-    $params = explode("&", $params);
-    $vars = array();
-    foreach($params as $p) {
-      $p = explode("=", $p);
-      $vars[$p[0]] = $p[1];
-    }
-    if(isset($vars["idnumber"]) &&
-    isset($vars["dir"])) {
-      include("../Models/Attendance.php");
-      $d = new DateTime();
-      $schoolYear = "2019"; // This should be in a config file
-      $attendance = new Attendance();
-      $attendance->insert(
-        $vars["idnumber"],
-        $vars["dir"],
-        $d->format("Y-m-d H:i:s"),
-        $schoolYear
-      );
-    }
-  }
-
-  function sender() {
-    //set_time_limit(60);
-    //for($t = 0; $t <= 59; $t++) {
-    $d = new DateTime();
-    include_once("../Models/Attendance.php");
-    $attendance  = new Attendance();
-    $record_to_send = $attendance->query_record_to_send();
-    foreach($record_to_send as $r) {
-      // within before the hour
-      $current = new DateTime($r["time"]);
-      // echo $r["id"] . " " . $current->format("Y-m-d h:i:s A") . " - " . $d->format("Y-m-d h:i:s A") . "<br>";
+    }else {
+      // Send
       if($r["contact"] != "") {
         $contact = explode(";", $r["contact"]);
         if(count($contact) > 1) {
@@ -92,57 +70,8 @@ class apiController extends Controller{
           }
         }
       }
-      $attendance->update_record($r["id"], array("isSent = 2"));
+      $a->insert($data["idnumber"], $data["gate"], $data["time"]->format("Y-m-d H:i:s"), $data["schoolYear"], 1, 1);
     }
-    //sleep(1);
-    //}
-  }
-  private function createTableFromArray($arr) {
-    echo "<table class=\"table table-sm\">";
-    foreach($arr as $i => $tr) {
-      if($tr["isSent"] == 2) {
-        echo "<tr style=\"background-color: #80f2e3;\">";
-        foreach($tr as $td) {
-          if($td instanceof DateTime) {
-            echo "<td>" . $td->format("Y-m-d h:i:s A") . "</td>";
-          }else {
-            echo "<td>" . $td ."<td>";
-          }
-        }
-        echo "</tr>";
-      } elseif($tr["isSent"] == 1) {
-        echo "<tr style=\"background-color: #00FF00;\">";
-        foreach($tr as $td) {
-          if($td instanceof DateTime) {
-            echo "<td>" . $td->format("Y-m-d h:i:s A") . "</td>";
-          }else {
-            echo "<td>" . $td ."<td>";
-          }
-        }
-      } elseif($tr["isEval"] == 1) {
-        echo "<tr style=\"background-color: #FFFF00;\">";
-        foreach($tr as $td) {
-          if($td instanceof DateTime) {
-            echo "<td>" . $td->format("Y-m-d h:i:s A") . "</td>";
-          }else {
-            echo "<td>" . $td ."<td>";
-          }
-        }
-        echo "</tr>";
-        echo "</tr>";
-      }else {
-        echo "<tr>";
-        foreach($tr as $td) {
-          if($td instanceof DateTime) {
-            echo "<td>" . $td->format("Y-m-d h:i:s A") . "</td>";
-          }else {
-            echo "<td>" . $td ."<td>";
-          }
-        }
-        echo "</tr>";
-      }
-    }
-    echo "</table><br>";
   }
 
   // TODO: Send maximum of 200 messages in a minute
@@ -169,16 +98,15 @@ class apiController extends Controller{
       (http_build_query($data)),
     );
     curl_setopt_array($curl,$curlopt);
-    $response = "nani";
-    // $response = curl_exec($curl);
+    $response = curl_exec($curl);
     $error = curl_error($curl);
     curl_close($curl);
-    // var_dump(array(
-    //   'response' => strpos($response,"{")!==false
-    //     ? json_decode($response)
-    //     : $response,
-    //     'error' => $error
-    //   ));
+    var_dump(array(
+      'response' => strpos($response,"{")!==false
+        ? json_decode($response)
+        : $response,
+        'error' => $error
+      ));
       return array(
         'response' => strpos($response,"{")!==false
           ? json_decode($response)
