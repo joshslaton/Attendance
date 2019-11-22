@@ -9,68 +9,69 @@ class apiController extends Controller{
   function evaluate($data) {
     include("../Models/DB.php");
     include("../Models/Attendance.php");
+    include("../Models/Student.php");
     $a = new Attendance();
-    $r = $a->query_last_record($data["idnumber"], $data["gate"]);
-    if($r) {
-      $r = $r[0];
-      $now = new DateTime();
-      $inDB = new DateTime($r["time"]);
-      $diff = $data["time"]->diff($inDB);
-      if(intval($diff->format("%h")) >= 1) {
-        // Sender
-        if($r["contact"] != "") {
-          $contact = explode(";", $r["contact"]);
-          if(count($contact) > 1) {
-            foreach($contact as $c) {
-              if(self::numberonly($c) && self::isMobileNumber($c)) {
-                $number = self::cleanNumber($c);
-                $gate = $r["gate"] == "in" ? "entrance" : "exit";
-                $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
-                $attendance->insertToHistory($r["idnumber"], $number, $msg, $d->format("Y-m-d H:i:s"));
-                self::sendSMS($r["idnumber"], $number, $msg);
+    $s = new Student();
+    if($s->exists("idnumber", $data["idnumber"])) {
+        $r = $a->query_last_record($data["idnumber"], $data["gate"]);
+        if($r) {
+          $r = $r[0];
+          $now = new DateTime();
+          $inDB = new DateTime($r["time"]);
+          $diff = $data["time"]->diff($inDB);
+          if(intval($diff->format("%h")) >= 1) {
+            // Sender
+            if($r["contact"] != "") {
+              $contact = explode(";", $r["contact"]);
+              if(count($contact) > 1) {
+                foreach($contact as $c) {
+                  if(self::numberonly($c) && self::isMobileNumber($c)) {
+                    $number = self::cleanNumber($c);
+                    $gate = $r["gate"] == "in" ? "entrance" : "exit";
+                    $msg = $r["fname"] . " has passed the $gate gate at " . $r->format("Y-m-d h:i:s A");
+                    self::sendSMS($r["idnumber"], $number, $msg);
+                  }
+                }
+              }else {
+                if(self::numberonly($r["contact"]) && self::isMobileNumber($r["contact"])) {
+                  $number = self::cleanNumber($r["contact"]);
+                  $gate = $r["gate"] == "in" ? "entrance" : "exit";
+                  $msg = $r["fname"] . " has passed the $gate gate at " . $data["time"]->format("Y-m-d h:i:s A");
+                  self::sendSMS($r["idnumber"], $number, $msg);
+                }
               }
             }
+            $a->insert($data["idnumber"], $data["gate"], $data["time"]->format("Y-m-d H:i:s"), $data["schoolYear"], 1, 1);
           }else {
-            if(self::numberonly($r["contact"]) && self::isMobileNumber($r["contact"])) {
-              $number = self::cleanNumber($r["contact"]);
-              $gate = $r["gate"] == "in" ? "entrance" : "exit";
-              $msg = $r["fname"] . " has passed the $gate gate at " . $data["time"]->format("Y-m-d h:i:s A");
-              $a->insertToHistory($r["idnumber"], $number, $msg, $now->format("Y-m-d H:i:s"));
-              self::sendSMS($r["idnumber"], $number, $msg);
-            }
-          }
-        }
-        $a->insert($data["idnumber"], $data["gate"], $data["time"]->format("Y-m-d H:i:s"), $data["schoolYear"], 1, 1);
-      }else {
-        if(intval($diff->format("%i")) >= 1) {
-          $a->insert($data["idnumber"], $data["gate"], $data["time"]->format("Y-m-d H:i:s"), $data["schoolYear"], 1, 0);
-        }
-      }
-    }else {
-      // Send
-      if($r["contact"] != "") {
-        $contact = explode(";", $r["contact"]);
-        if(count($contact) > 1) {
-          foreach($contact as $c) {
-            if(self::numberonly($c) && self::isMobileNumber($c)) {
-              $number = self::cleanNumber($c);
-              $gate = $r["gate"] == "in" ? "entrance" : "exit";
-              $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
-              $attendance->insertToHistory($r["idnumber"], $number, $msg, $d->format("Y-m-d H:i:s"));
-              self::sendSMS($r["idnumber"], $number, $msg);
+            if(intval($diff->format("%i")) >= 1) {
+              $a->insert($data["idnumber"], $data["gate"], $data["time"]->format("Y-m-d H:i:s"), $data["schoolYear"], 1, 0);
             }
           }
         }else {
-          if(self::numberonly($r["contact"]) && self::isMobileNumber($r["contact"])) {
-            $number = self::cleanNumber($r["contact"]);
-            $gate = $r["gate"] == "in" ? "entrance" : "exit";
-            $msg = $r["fname"] . " has passed the $gate gate at " . $current->format("Y-m-d h:i:s A");
-            $attendance->insertToHistory($r["idnumber"], $number, $msg, $d->format("Y-m-d H:i:s"));
-            self::sendSMS($r["idnumber"], $number, $msg);
+            // Send
+          $studentInfo = $s->studentGetInfo($data["idnumber"]);
+          if($studentInfo["contact"] != "") {
+            $contact = explode(";", $studentInfo["contact"]);
+            if(count($contact) > 1) {
+              foreach($contact as $c) {
+                if(self::numberonly($c) && self::isMobileNumber($c)) {
+                  $number = self::cleanNumber($c);
+                  $gate = $data["gate"] == "in" ? "entrance" : "exit";
+                  $msg = $studentInfo["fname"] . " has passed the $gate gate at " . $data["time"]->format("Y-m-d h:i:s A");
+                  self::sendSMS($r["idnumber"], $number, $msg);
+                }
+              }
+            }else {
+              if(self::numberonly($studentInfo["contact"]) && self::isMobileNumber($studentInfo["contact"])) {
+                $number = self::cleanNumber($studentInfo["contact"]);
+                $gate = $data["gate"] == "in" ? "entrance" : "exit";
+                $msg = $studentInfo["fname"] . " has passed the $gate gate at " . $data["time"]->format("Y-m-d h:i:s A");
+                self::sendSMS($r["idnumber"], $number, $msg);
+              }
+            }
           }
+          $a->insert($data["idnumber"], $data["gate"], $data["time"]->format("Y-m-d H:i:s"), $data["schoolYear"], 1, 1);
         }
-      }
-      $a->insert($data["idnumber"], $data["gate"], $data["time"]->format("Y-m-d H:i:s"), $data["schoolYear"], 1, 1);
     }
   }
 

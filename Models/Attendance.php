@@ -144,8 +144,8 @@ class Attendance {
       "proj_attendance.idnumber IN (SELECT idnumber FROM proj_student2) AND " .
       "proj_attendance.isEval = 1 AND " .
       "proj_attendance.gate = \"$gate\" AND " .
+      "proj_attendance.idnumber = \"$idnumber\" AND " .
       "proj_attendance.time BETWEEN \"$y-$m-$d 00:00:00\" AND \"$y-$m-$d 23:59:59\" ORDER BY id DESC LIMIT 1";
-    // print_r($query_last_record_of_student); echo "<br>";
     $results = DB::query(array($query_last_record_of_student));
     return $results;
   }
