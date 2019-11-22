@@ -29,7 +29,7 @@ class apiController extends Controller{
                     $number = self::cleanNumber($c);
                     $gate = $r["gate"] == "in" ? "entrance" : "exit";
                     $msg = $r["fname"] . " has passed the $gate gate at " . $r->format("Y-m-d h:i:s A");
-                    self::sendSMS($r["idnumber"], $number, $msg);
+                    // self::sendSMS($r["idnumber"], $number, $msg);
                   }
                 }
               }else {
@@ -37,7 +37,7 @@ class apiController extends Controller{
                   $number = self::cleanNumber($r["contact"]);
                   $gate = $r["gate"] == "in" ? "entrance" : "exit";
                   $msg = $r["fname"] . " has passed the $gate gate at " . $data["time"]->format("Y-m-d h:i:s A");
-                  self::sendSMS($r["idnumber"], $number, $msg);
+                  // self::sendSMS($r["idnumber"], $number, $msg);
                 }
               }
             }
@@ -58,7 +58,7 @@ class apiController extends Controller{
                   $number = self::cleanNumber($c);
                   $gate = $data["gate"] == "in" ? "entrance" : "exit";
                   $msg = $studentInfo["fname"] . " has passed the $gate gate at " . $data["time"]->format("Y-m-d h:i:s A");
-                  self::sendSMS($r["idnumber"], $number, $msg);
+                  // self::sendSMS($r["idnumber"], $number, $msg);
                 }
               }
             }else {
@@ -66,7 +66,7 @@ class apiController extends Controller{
                 $number = self::cleanNumber($studentInfo["contact"]);
                 $gate = $data["gate"] == "in" ? "entrance" : "exit";
                 $msg = $studentInfo["fname"] . " has passed the $gate gate at " . $data["time"]->format("Y-m-d h:i:s A");
-                self::sendSMS($r["idnumber"], $number, $msg);
+                // self::sendSMS($r["idnumber"], $number, $msg);
               }
             }
           }
