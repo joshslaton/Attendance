@@ -20,7 +20,7 @@ if(isset($_GET["dir"]) && isset($_GET["idnumber"])) {
         "gate" => $_GET["dir"],
         "time" => new DateTime(),
         "schoolYear" => 2019,
-      );
+    );
       $api = new apiController();
       $api->evaluate($data);
     }

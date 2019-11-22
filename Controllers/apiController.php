@@ -10,10 +10,12 @@ class apiController extends Controller{
     include("../Models/DB.php");
     include("../Models/Attendance.php");
     include("../Models/Student.php");
-    $send = 0;
+    $send = true;
     $a = new Attendance();
     $s = new Student();
-    if($s->exists("idnumber", $data["idnumber"])) {
+    $exists = $s->exists("idnumber", $data["idnumber"]);
+    if(count($exists) > 0) {
+      error_log("ID Number:" . $data["idnumber"] . " exists");
       $r = $a->query_last_record($data["idnumber"], $data["gate"]);
       if($r) {
         $r = $r[0];
@@ -63,7 +65,7 @@ class apiController extends Controller{
                 $gate = $data["gate"] == "in" ? "entrance" : "exit";
                 $msg = $studentInfo["fname"] . " has passed the $gate gate at " . $data["time"]->format("Y-m-d h:i:s A");
                 if($send)
-                  self::sendSMS($r["idnumber"], $number, $msg);
+                  self::sendSMS($studentInfo["idnumber"], $number, $msg);
               }
             }
           }else {
@@ -71,7 +73,8 @@ class apiController extends Controller{
               $number = self::cleanNumber($studentInfo["contact"]);
               $gate = $data["gate"] == "in" ? "entrance" : "exit";
               $msg = $studentInfo["fname"] . " has passed the $gate gate at " . $data["time"]->format("Y-m-d h:i:s A");
-              // self::sendSMS($r["idnumber"], $number, $msg);
+              if($send)
+                self::sendSMS($studentInfo["idnumber"], $number, $msg);
             }
           }
         }
