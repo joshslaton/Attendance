@@ -69,4 +69,10 @@ class Controller {
             require(ROOT . "Views/Layouts/" . $this->layout . '.php');
         }
     }
+
+    function is_logged_in() {
+      if(isset($_SESSION["isLoggedIn"])) {
+        return $_SESSION["isLoggedIn"] == 1 ? true : false;
+      }
+    }
 }

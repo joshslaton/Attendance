@@ -18,6 +18,14 @@ class Student {
       return array();
     }
 
+    function studentPerGradeLevel($gradeLevel) {
+      $studentList = DB::query(array("SELECT * FROM proj_student2 where ylevel=\"$gradeLevel\" ORDER BY lname"));
+      if(count($studentList) > 0) {
+        return $studentList;
+      }
+      return array();
+    }
+
     function showAll() {
         $studentListSorted = array();
         $ylevels = DB::query(array("SELECT ylevel FROM proj_yearlevel2 ORDER BY id"));

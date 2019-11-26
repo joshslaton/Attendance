@@ -7,65 +7,76 @@ class studentController extends Controller{
     $this->render("index");
   }
 
-  function list() {
+  function show() {
     require(ROOT . "Models/Student.php");
     $student = new Student();
 
-    $d["users"] = $student->showAll();
+    $d["students"] = $student->showAll();
+    $d["action"] = "show";
     $this->set($d);
-    $this->render("ListUsers");
+    $this->render("index");
   }
 
   function create() {
-    require(ROOT . "Models/Student.php");
-    $student = new Student();
+    session_start();
+    if($this->is_logged_in()) {
+      require(ROOT . "Models/Student.php");
+      $student = new Student();
 
-    if(
-      isset($_POST["idnumber"]) && isset($_POST["fname"]) &&
-      isset($_POST["mname"]) && isset($_POST["lname"]) &&
-      isset($_POST["contact"]) && isset($_POST["ylevel"])
-    ) {
-      $toValidate = array(
-        $_POST["idnumber"], $_POST["fname"], $_POST["mname"],
-        $_POST["lname"], $_POST["contact"], $_POST["ylevel"],
-      );
-      if($this->validateArray($toValidate)) {
-        if($command = $student->create($_POST["idnumber"], $_POST["fname"], $_POST["mname"], $_POST["lname"], $_POST["contact"], $_POST["ylevel"])) {
-          // header("Location: " . WEBROOT . "student/create");
-          $d["response"] = $command;
-        }
-      }else {
-        $status = "Failed";
-        $message = "One of the fields are Empty!";
-        $log = array(
-          "status" => $status,
-          "message" => $message
+      if(
+        isset($_POST["idnumber"]) && isset($_POST["fname"]) &&
+        isset($_POST["mname"]) && isset($_POST["lname"]) &&
+        isset($_POST["contact"]) && isset($_POST["ylevel"])
+      ) {
+        $toValidate = array(
+          $_POST["idnumber"], $_POST["fname"], $_POST["mname"],
+          $_POST["lname"], $_POST["contact"], $_POST["ylevel"],
         );
-        $d["response"] = $log;
+        if($this->validateArray($toValidate)) {
+          if($command = $student->create($_POST["idnumber"], $_POST["fname"], $_POST["mname"], $_POST["lname"], $_POST["contact"], $_POST["ylevel"])) {
+            // header("Location: " . WEBROOT . "student/create");
+            $d["response"] = $command;
+          }
+        }else {
+          $status = "Failed";
+          $message = "One of the fields are Empty!";
+          $log = array(
+            "status" => $status,
+            "message" => $message
+          );
+          $d["response"] = $log;
+        }
       }
+      $d["yearLevels"] = $student->yearLevels();
+      $this->set($d);
+      $this->render("create");
+    }else {
+      header("Location: /");
+      exit();
     }
-    $d["yearLevels"] = $student->yearLevels();
-    $this->set($d);
-    $this->render("create");
   }
 
   function modify() {
-
-    if(isset($_POST["idnumber"])) {
-      $toValidate=array(
-        $_POST["idnumber"]
-      );
-      if($this->validateArray($toValidate)) {
-        require(ROOT . "Models/Student.php");
-        $student = new Student();
-        $d["student"] = $student->search($_POST["idnumber"]);
-        $d["yearLevels"] = $student->yearLevels();
-        $this->set($d);
-        // $this->renderNoHeaders("search");
+    session_start();
+    if($this->is_logged_in()) {
+      if(isset($_POST["idnumber"])) {
+        $toValidate=array(
+          $_POST["idnumber"]
+        );
+        if($this->validateArray($toValidate)) {
+          require(ROOT . "Models/Student.php");
+          $student = new Student();
+          $d["student"] = $student->search($_POST["idnumber"]);
+          $d["yearLevels"] = $student->yearLevels();
+          $this->set($d);
+          // $this->renderNoHeaders("search");
+        }
       }
+      $this->render("modify");
+    }else {
+      header("Location: /");
+      exit();
     }
-
-    $this->render("modify");
   }
 
   function search() {

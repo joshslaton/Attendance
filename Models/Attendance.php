@@ -43,8 +43,6 @@ class Attendance {
     DB::query(array($q));
   }
 
-
-
   function query_all_records_for_display() {
     $d = new DateTime();
     $y = $d->format("Y");
@@ -189,6 +187,22 @@ class Attendance {
       "idnumber = $idnumber AND " .
       "isSent = 2";
     $results = DB::query(array($query_record_of_student));
+    return $results;
+  }
+
+  function attendance_per_day_of_month($idnumber, $month, $year, $day) {
+    $q = "" .
+    "SELECT " .
+    "count(time) as count " .
+    "FROM proj_attendance " .
+    "WHERE " .
+    // "isSent = 1 AND " .
+    "idnumber = \"$idnumber\" AND " .
+    "year(time) = $year AND " .
+    "month(time) = $month AND " .
+    "day(time) = $day " .
+    "GROUP BY day(time) LIMIT 1";
+    $results = DB::query(array($q));
     return $results;
   }
 

@@ -4,27 +4,309 @@
     src: url('/Plugins/fonts/Montserrat-Light.otf') format('opentype');
 }
 
+@font-face {
+  font-family: "Source Sans Pro";
+  font-weight: 400;
+  font-style: normal;
+  src: url('/Plugins/fonts/SourceSansPro-Regular.otf');
+  src: url('/Plugins/fonts/SourceSansPro-Regular.otf') format('opentype');
+}
 
-* {
+body, html {
+  /* display: none; */
+  font-size: 1em;
+  /* font-family: 'Source Sans Pro', Helvetica, Sans-Serif; */
   font-family: 'Montserrat', sans-serif;
-  /* display: block; */
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box
 }
 
-body {
-  background-image: url('/Plugins/images/bg2.png');
-  /* background-image: linear-gradient(to bottom right, rgba(0,150,0,1), rgba(0,0,0,0)); */
-  background-attachment: fixed;
+#pageBody {
+  margin: 15px;
 }
-.noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
+*, ::after, ::before, :after, :before {
+  -webkit-box-sizing: inherit;
+  -moz-box-sizing: inherit;
+  -o-box-sizing: inherit;
+  box-sizing: inherit
 }
 
+a:link, a:visited {
+  text-decoration: none
+}
+
+a:hover {
+  text-decoration: underline
+}
+
+a:active {
+  text-decoration: none
+}
+
+li:hover {
+  background-color: #bfffc7
+}
+
+.width100 {
+  width: 100%
+}
+
+.width70 {
+  width: 70%
+}
+
+.width50 {
+  width: 50%
+}
+
+.width30 {
+  width: 30%
+}
+
+.block, .display-block {
+  display: block
+}
+
+.display-inline-block, .inline-block {
+  display: inline-block
+}
+
+.display-none {
+  display: none
+}
+
+.align-left {
+  text-align: left
+}
+
+.align-center {
+  text-align: center
+}
+
+.align-right {
+  text-align: right
+}
+
+.align-justify {
+  text-align: justify
+}
+
+.align-top {
+  vertical-align: top
+}
+
+.align-middle {
+  vertical-align: middle
+}
+
+.align-bottom {
+  vertical-align: bottom
+}
+
+.float-left {
+  float: left
+}
+
+.float-right {
+  float: right
+}
+
+.clear-left {
+  clear: left
+}
+
+.clear-right {
+  clear: right
+}
+
+.clear-both {
+  clear: both
+}
+
+.hr, .hr-heavy, .hr-light {
+  display: block;
+  height: 2px;
+  padding: 0;
+  margin: 10px 0 15px 0;
+  background: #fff;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, .35)
+}
+
+.hr-light {
+  height: 1px
+}
+
+.hr-heavy {
+  height: 3px
+}
+
+.line-through {
+  text-decoration: line-through
+}
+
+.no-select, .noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none
+}
+
+.normal-wrap, .white-space-normal {
+  white-space: normal
+}
+
+.no-wrap, .white-space-nowrap {
+  white-space: nowrap
+}
+
+.font-weight-bold {
+  font-weight: 700
+}
+
+.font-weight-normal {
+  font-weight: 400
+}
+
+.force-wrap {
+  word-wrap: break-word;
+  white-space: pre-wrap
+}
+
+.pre-wrap {
+  white-space: pre-wrap
+}
+
+.wrap {
+  white-space: pre-wrap
+}
+
+.margin-title {
+  margin: 0 0 15px 0
+}
+
+.margin-all {
+  margin: 15px
+}
+
+.margin-none {
+  margin: 0
+}
+
+.margin-top {
+  margin-top: 15px
+}
+
+.margin-right {
+  margin-right: 15px
+}
+
+.margin-bottom {
+  margin-bottom: 15px
+}
+
+.margin-left {
+  margin-left: 15px
+}
+
+.padding-all {
+  padding: 15px
+}
+
+.padding-none {
+  padding: 0
+}
+
+.padding-top {
+  padding-top: 15px
+}
+
+.padding-right {
+  padding-right: 15px
+}
+
+.padding-bottom {
+  padding-bottom: 15px
+}
+
+.padding-left {
+  padding-left: 15px
+}
+
+.selectable {
+  cursor: pointer
+}
+
+.center-both {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Index */
+/* Card */
+.card-container {
+
+}
+
+.card-holder {
+  display: inline-block;
+  vertical-align: top;
+  padding: 15px;
+  margin: 15px;
+}
+
+.card-title {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+.card-subtitle {
+  font-size: 0.7em;
+}
+
+.card-item {
+  display: block;
+  font-size: 1em;
+}
+
+.announcementContainer {
+  display: inline-block;
+  float: right;
+  vertical-align: top;
+  width: 400px;
+  margin: 15px;
+}
+
+.post {
+  font-family: 'Source Sans Pro', sans-serif;
+  padding: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+#post-title {
+  font-size: 1.5em;
+}
+
+#post-created {
+}
+
+#post-message {
+}
+
+.title {
+  font-size: 1.5em;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Others */
 .container {
   text-align: center;
 }
@@ -33,10 +315,15 @@ body {
   /* display: inline-block; */
   text-align: center;
 }
+
 .page-header {
   background: white;
+  padding: 12px 16px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  margin-bottom: 30px;
+}
+
+.page-title {
+  font-size: 1.5em;
 }
 
 .dropdown {
@@ -44,7 +331,6 @@ body {
   display: inline-block;
   cursor: pointer;
   text-align: center;
-  padding: 12px 16px;
 }
 
 .dropdown-content {
@@ -136,7 +422,12 @@ table.form_addUser td:last-child{
 		opacity: 0;
 	}
 }
-
+/* Student */
+/* List Student */
+#student-table {
+  width: 100%;
+  font-size: 1.5em;
+}
 /* Modify Student */
 table#modifyStudent {
   margin-top: 30px;
