@@ -2,6 +2,18 @@
 
 class Attendance {
 
+  function utf8_converter($array)
+  {
+      array_walk_recursive($array, function(&$item, $key){
+          if(!mb_detect_encoding($item, 'utf-8', true)){
+                  $item = utf8_encode($item);
+          }
+      });
+
+
+      return $array;
+  }
+
   function insert($idnumber, $gate, $time, $schoolYear, $isEval, $isSent) {
     $command = db::query(
       array(
@@ -203,6 +215,10 @@ class Attendance {
     "day(time) = $day " .
     "GROUP BY day(time) LIMIT 1";
     $results = DB::query(array($q));
+    // $encoded = array();
+    // foreach($results as $result) {
+    //   array_push($encoded, $this->utf8_converter($result));
+    // }
     return $results;
   }
 

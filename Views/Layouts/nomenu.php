@@ -16,11 +16,11 @@
         $stylesheet = file_get_contents(dirname(__FILE__, 3) . "/Plugins/timecard.css");
         require_once(dirname(__FILE__, 3) . "/Plugins/composer/vendor/autoload.php");
         $mpdf = new \Mpdf\Mpdf();
-        // $mpdf->WriteHTML($content_for_layout, 2);
-        $mpdf->WriteHTML($stylesheet, \Mpdf\HTMLParserMode::HEADER_CSS);
+        $mpdf->AddFontDirectory(dirname(__FILE__, 3) . "/Plugins/fonts/");
+        $mpdf->WriteHTML($stylesheet, 1);
         $mpdf->WriteHTML($content_for_layout,\Mpdf\HTMLParserMode::HTML_BODY);
-        // $mpdf->Output();
-        echo $content_for_layout;
+        $mpdf->Output();
+        // echo $content_for_layout;
         ?>
 </body>
 </html>

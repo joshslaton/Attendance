@@ -22,6 +22,8 @@ class attendanceController extends Controller{
       include_once("../Models/Student.php");
       $student = new Student();
       $attendance = new Attendance();
+      $stylesheet = file_get_contents(dirname(__FILE__, 2) . "/Plugins/timecard.css");
+      $d["stylesheet"] = $stylesheet;
       $d["studentInfo"] = $student->studentGetInfo($_POST["idnumber"]);
       $d["attendanceList"] = $attendance->query_record_of_student($_POST["idnumber"], $_POST["optionMonth"]);
       $this->set($d);
@@ -64,11 +66,15 @@ class attendanceController extends Controller{
         $d["gradeLevel"] = $_POST["gradeLevel"];
         $d["month"] = $_POST["month"];
         $d["year"] = $_POST["year"];
+        $d["grade"] = $s->yearLevels();
+        $this->set($d);
+        $this->renderNoMenu("grade");
+      }else {
+        $d["grade"] = $s->yearLevels();
+        $this->set($d);
+        $this->render("grade");
       }
 
-      $d["grade"] = $s->yearLevels();
-      $this->set($d);
-      $this->render("grade");
     }else {
       header("Location: /user/login/");
     }

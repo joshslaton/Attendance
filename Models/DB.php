@@ -15,7 +15,7 @@ class DB {
     try {
       // print_r(Registry::check('config'));
       // $config = Registry::get('config/database');
-      self::$connection = new \PDO('mysql:host='.$dbhost.'; dbname='. $dbname, $dbuser, $dbpass);
+      self::$connection = new \PDO('mysql:host='.$dbhost.'; dbname='. $dbname, $dbuser, $dbpass, array('charset'=>'utf8'));
       // self::$connection = new \PDO('mysql:host='.$config["host"].'; dbname='. $config["database"], $config["username"], $config['password']);
 
     } catch( \PDOexception $e) {

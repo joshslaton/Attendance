@@ -38,18 +38,4 @@
     </div>
   </div>
 
-  <div class="card-container">
-    <div class="card-holder">
-      <p class="card-title">Administration</p>
-      <a class="card-item" href="/admin/">User - All Users</a>
-      <a class="card-item" href="#">User - Roles</a>
-    </div>
-  </div>
-
-  <div class="card-container">
-    <div class="card-holder">
-      <p class="card-title">Others</p>
-      <a class="card-item" href="#">Calendar - Holidays</a>
-    </div>
-  </div>
 </div>

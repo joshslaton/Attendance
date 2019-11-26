@@ -55,7 +55,8 @@ if(isset($_POST["optionMonth"]) && isset($_POST["optionYear"])) {
         $html .= "<tr>";
           foreach($columns as $index => $c) {
             if($index == 0) {
-              $html .= "<td></td>";
+              $day = (new DateTime("$year-$month-$k"))->format("D");
+              $html .= "<td>$day</td>";
             } elseif($index == 1) {
               $html .= "<td>$k</td>";
             }else {
@@ -75,7 +76,8 @@ if(isset($_POST["optionMonth"]) && isset($_POST["optionYear"])) {
           $html .= "<tr>";
             foreach($columns as $index => $c) {
               if($index == 0) {
-                $html .= "<td></td>";
+                $day = (new DateTime("$year-$month-$k"))->format("D");
+                $html .= "<td>$day</td>";
               } elseif($index == 1) {
                 $html .= "<td>$k</td>";
               }else {
@@ -108,7 +110,8 @@ if(isset($_POST["optionMonth"]) && isset($_POST["optionYear"])) {
               $html .= "<tr>";
                 foreach($columns as $index => $c) {
                   if($index == 0) {
-                    $html .= "<td></td>";
+                    $day = (new DateTime("$year-$month-$k"))->format("D");
+                    $html .= "<td>$day</td>";
                   }elseif($index == 1) {
                     $html .= "<td>$k</td>";
                   }else {
